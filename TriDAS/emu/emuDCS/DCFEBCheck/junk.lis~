@@ -1,0 +1,28 @@
+
+void DCFEBTestMain::check_CompThresh_and_CalibVolt(){
+
+  float val,offset;
+  thisDCFEB_->set_comp_thresh(0.0);
+  usleep(50000);
+  int ival=thisDCFEB_->ADC(0);
+  float val2=ival;
+  val2=val2/1000.;
+  offset=3.5-val2;
+  for(int i=0;i<100;i++){
+    // first check comp dac and adc
+    val=i*0.04;
+    thisDCFEB_->set_comp_thresh_prec(val,val5);
+    usleep(50000);
+    ival=thisDCFEB_->ADC(0);
+    val2=ival;
+    val2=val2/1000.;
+    // second cech calib dac and adc
+    thisDCFEB_->set_cal_dac(val,val);
+    usleep(50000);
+    float val3=thisDCFEB_->ADC(1)/1000.;
+    float val4=thisDCFEB_->ADC(2)/1000.;
+    printf(" val: %f %f %f %f %f %f \n",val,val2,3.5-val2-offset,val3,val4,offset);
+  }
+  fflush(stdout);
+
+}

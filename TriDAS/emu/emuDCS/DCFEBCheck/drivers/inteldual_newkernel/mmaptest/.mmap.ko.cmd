@@ -1,0 +1,1 @@
+cmd_/home/durkin/TriDAS/emu/emuDCS/DMBTest/drivers/inteldual/mmaptest/mmap.ko := ld -m elf_x86_64 -r -o /home/durkin/TriDAS/emu/emuDCS/DMBTest/drivers/inteldual/mmaptest/mmap.ko /home/durkin/TriDAS/emu/emuDCS/DMBTest/drivers/inteldual/mmaptest/mmap.o /home/durkin/TriDAS/emu/emuDCS/DMBTest/drivers/inteldual/mmaptest/mmap.mod.o

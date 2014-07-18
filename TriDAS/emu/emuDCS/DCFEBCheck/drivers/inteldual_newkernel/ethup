@@ -1,0 +1,15 @@
+#!/bin/bash
+/sbin/rmmod e1000e
+/sbin/modprobe -r e1000h
+/sbin/modprobe -r eth_hook
+/sbin/modprobe -r eth_hook_2
+mknod /dev/schar2 c 232 0
+chmod 777 /dev/schar2
+/sbin/ifconfig eth2 up
+/sbin/ifconfig eth2 192.168.100.2
+/sbin/ifconfig eth2 promisc mtu 8192 broadcast 192.168.255.255 netmask 255.255.0.0
+mknod /dev/schar1 c 42 0
+chmod 777 /dev/schar1
+/sbin/ifconfig eth1 up
+/sbin/ifconfig eth1 192.168.200.1
+/sbin/ifconfig eth1 promisc mtu 8192 broadcast 10.0.255.255 netmask 255.255.0.0

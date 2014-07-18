@@ -1,0 +1,1 @@
+make -C /lib/modules/$(/bin/uname -r)/build SUBDIRS=/home/boardtest/TriDAS/emu/emuDAQ/drivers/e1000hook/dl2k_driver

@@ -1,0 +1,109 @@
+// $Id: StndAloneDAQ.h,v 1.6 2005/08/24 13:37:21 xdaq Exp $
+
+/*************************************************************************
+ * XDAQ Components for Distributed Data Acquisition                      *
+ * Copyright (C) 2000-2004, CERN.			                 *
+ * All rights reserved.                                                  *
+ * Authors: J. Gutleber and L. Orsini					 *
+ *                                                                       *
+ * For the licensing terms see LICENSE.		                         *
+ * For the list of contributors see CREDITS.   			         *
+ *************************************************************************/
+
+#ifndef _StndAloneDAQ_h_
+#define _StndAloneDAQ_h_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h> 
+#include <netinet/if_ether.h> 
+#include <netinet/in.h> 
+#include <netinet/ip.h> 
+#include <net/if.h> 
+#include <sys/ioctl.h> 
+#include <netpacket/packet.h>
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/mman.h>
+#include "/home/dcfebcheck/TriDAS/emu/emuDCS/DCFEBCheck/drivers/inteldual2cards/eth_hook_2_nobigphysxxx/schar.h"
+#include "/home/dcfebcheck/TriDAS/emu/emuDCS/DCFEBCheck/drivers/inteldual2cards/eth_hook_2_nobigphysxxx/eth_hook_2.h"
+#ifndef __NETINET_IF_ETHER_H
+#include <netinet/if_ether.h>
+#endif
+
+namespace emu{
+  namespace pc{
+
+class StndAloneDAQ{	
+ public:
+  StndAloneDAQ(int schr);
+
+  ~StndAloneDAQ();
+
+  int fd_schar;
+  unsigned char hw_dest_addr[6];
+  unsigned char hw_source_addr[6];
+  struct ethhdr *ether_header[2];
+  int  eth_open(char *dev_name);
+  int  eth_register_mac();
+  void eth_close(void);
+  int  eth_reset(void);
+  int  eth_readmm();
+  int  eth_write();
+  void eth_enableBlock();
+  void eth_disableBlock();
+  void eth_resetAndEnable();
+  int getCFEBDataOneEvent();
+  int test_more_data();
+  int nwbuf;   
+  char ebuf[10000];
+  char *wbuf;
+  char rbuf[6404]; 
+
+    //all below needed for ddu2004 only                                                                                                                   
+    // new additions for MemoryMapped DDU                                                                                                                 
+    char *buf_data;             ///< pointer to data to be read from ring buffer                                                                          
+    char *buf_start;            ///< pointer to start of data ring buffer                                                                                 
+    unsigned long int buf_pnt;  ///< read pointer (index; number of bytes) w.r.t. the beginning of data ring buffer                                       
+    unsigned long int buf_end;  ///< end of data ring buffer w.r.t its beginning                                                                          
+    unsigned long int buf_eend; ///< index in data ring buffer beyond which an event may not fit any more                                                 
+    unsigned long int buf_pnt_kern; ///< kernel's write pointer (index; number of bytes) w.r.t. the beginning of data ring buffer                         
+
+    char *ring_start;           ///< pointer to start of packet info ring buffer                                                                          
+    unsigned long int ring_size;        ///< size of packet info ring buffer                                                                              
+    unsigned long int ring_pnt; ///< read pointer (index; number of bytes) w.r.t. the beginning of packet info ring buffer                                
+    unsigned short ring_loop;           ///< the number of times the reading of the data ring buffer has looped back                                      
+    unsigned short ring_loop_kern;         ///< the number of times the writing of the data ring buffer has looped back as obtained from the current entry of the packet info ring                                                                                                                                 
+    unsigned short ring_loop_kern2;        ///< the number of times the writing of the data ring buffer has looped back as obtained from the first entry of the packet info ring                                                                                                                                   
+    unsigned short timeout;  ///< timeout waiting for event                                                                                               
+    unsigned short packets; ///< number of packets in event                                                                                               
+    unsigned short pmissing;    ///< packets are  missing at beginning                                                                                    
+    unsigned short pmissing_prev; ///< packets are missing at end                                                                                         
+    unsigned short end_event;   ///< end of event seen
+    unsigned short overwrite; ///< overwrite
+
+    char *tail_start;           ///< not used                                                                                                                                                          
+    // DEBUG START
+    int visitCount;             ///< the number of times readDDU has been called
+    int oversizedCount;         ///< the number of oversized events
+    int pmissingCount;          ///< the number of times packets were missing
+    int loopOverwriteCount;     ///< the number of times packet info ring buffer overwrite has occurred
+    int bufferOverwriteCount;   ///< the number of times data ring buffer overwrite has occurred
+    int timeoutCount;           ///< the number of times timeout has occurred
+    int endEventCount;          ///< the number of times end of event has been 
+
+
+ private:
+  // From Test.h
+  FILE *fpout;
+
+};
+
+}}
+
+#endif

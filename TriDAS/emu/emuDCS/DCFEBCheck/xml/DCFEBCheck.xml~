@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<xc:Partition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xc="http://xdaq.web.cern.ch/xdaq/xsd/2004/XMLConfiguration-30">
+
+    	<xc:Context url="http://phy-dhcp-33-172:30074">
+		
+                <xc:Application class="emu::pc::DCFEBCheck" id="30" instance="0" network="local"/>
+                <xc:Module>/home/dcfebcheck/TriDAS/emu/daq/reader/lib/linux/x86/libemudaqreader.so</xc:Module>
+		<xc:Module>/home/dcfebcheck/TriDAS/emu/emuDCS/PeripheralCore/lib/linux/x86/libEmuPeripheralCore.so</xc:Module>
+                <xc:Module>/opt/xdaq/lib/libtstoreclient.so</xc:Module>
+                <xc:Module>/home/dcfebcheck/TriDAS/emu/emuDCS/OnlineDB/lib/linux/x86/libEmuOnlineDB.so</xc:Module>
+                <xc:Module>/home/dcfebcheck/TriDAS/emu/emuDCS/PeripheralApps/lib/linux/x86/libEmuPeripheralApps.so</xc:Module>
+		<xc:Module>/home/dcfebcheck/TriDAS/emu/emuDCS/DCFEBCheck/lib/linux/x86/libDCFEBCheck.so</xc:Module>
+         
+        </xc:Context>
+
+</xc:Partition>

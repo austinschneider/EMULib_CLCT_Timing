@@ -1,0 +1,2 @@
+make -C /lib/modules/$(/bin/uname -r)/build SUBDIRS=$PWD modules
+

@@ -1,0 +1,1 @@
+make -C /lib/modules/$(/bin/uname -r)/build SUBDIRS=/home/boardtest/TriDAS/emu/emuDCS/CFEBTest/drivers/dl2khook/dl2k_driver

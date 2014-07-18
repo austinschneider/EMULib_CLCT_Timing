@@ -1,0 +1,259 @@
+// $Id: CFEBTestMain.h,v 1.3 2005/08/24 13:37:21 xdaq Exp $
+
+/*************************************************************************
+ * XDAQ Components for Distributed Data Acquisition                      *
+ * Copyright (C) 2000-2004, CERN.			                 *
+ * All rights reserved.                                                  *
+ * Authors: J. Gutleber and L. Orsini					 *
+ *                                                                       *
+ * For the licensing terms see LICENSE.		                         *
+ * For the list of contributors see CREDITS.   			         *
+ *************************************************************************/
+
+#ifndef _CFEBCheck_h_
+#define _CFEBCheck_h_
+
+#include "xdaq/Application.h"
+#include "xdaq/ApplicationGroup.h"
+#include "xdaq/ApplicationContext.h"
+#include "xdaq/ApplicationStub.h"
+#include "xdaq/exception/Exception.h"
+#include "xdaq/ApplicationRegistry.h"
+
+#include "xcept/tools.h"
+
+#include "xdaq/NamespaceURI.h"
+
+#include "xoap/MessageReference.h"
+#include "xoap/MessageFactory.h"
+#include "xoap/SOAPEnvelope.h"
+#include "xoap/SOAPName.h"
+#include "xoap/SOAPBody.h"
+#include "xoap/SOAPBodyElement.h"
+#include "xoap/Method.h"
+#include "xgi/Utils.h"
+#include "xgi/Method.h"
+#include "cgicc/CgiDefs.h"
+#include "cgicc/Cgicc.h"
+#include "cgicc/HTTPHTMLHeader.h"
+#include "cgicc/HTMLClasses.h"
+
+#include "xcept/tools.h"
+
+#include "xdata/String.h"
+#include "xdata/UnsignedLong.h"
+
+
+#include <iostream.h>
+#include <stdio.h>
+#include <time.h>
+#include <sys/time.h>
+		    
+#include <sstream>
+
+#include "toolbox/net/URL.h"
+#include "pt/PeerTransportAgent.h"
+#include "pt/SOAPMessenger.h"
+
+#include "emu/pc/ALCTController.h"
+#include "emu/pc/BuckeyeChip.h"
+#include "emu/pc/CCB.h"
+#include "emu/pc/DCFEB.h"
+#include "emu/pc/Chamber.h"
+#include "emu/pc/Crate.h"
+#include "emu/pc/ODAQMB.h"
+#include "emu/pc/EMU_CC_constants.h"
+#include "emu/pc/EmuController.h"
+#include "emu/pc/EmuEndcap.h"
+#include "emu/pc/EMU_JTAG_constants.h"
+#include "emu/pc/EMUjtag.h"
+#include "emu/pc/EmuLogger.h"
+#include "emu/pc/GenDATA.h"
+#include "emu/pc/geom.h"
+#include "emu/pc/JTAG_constants.h"
+#include "emu/pc/MPC.h"
+#include "emu/pc/RAT.h"
+#include "emu/pc/TMB_constants.h"
+#include "emu/pc/TMB.h"
+#include "emu/pc/TMBTester.h"
+#include "emu/pc/VMECC.h"
+#include "emu/pc/vme_cmd.h"
+#include "emu/pc/VMEController.h"
+#include "emu/pc/VMEModule.h"
+
+
+#include "emu/daq/reader/RawDataFile.h"
+#include "emu/daq/reader/Spy.h"
+#include "emu/daq/reader/Base.h"
+#include "emu/daq/reader/Clock.h"
+
+
+
+namespace emu{
+  namespace pc{
+
+class DCFEBCheck: public xdaq::Application  
+{
+ public:
+  
+  XDAQ_INSTANTIATOR();
+  
+  // board number
+  int ibrdnum_;
+  const char* cbrdnum_;
+  std::string brdnum_;
+  std::string prmtbox_; 
+  // head text
+  char head_[100];
+  // comment text
+  std::string comment_;
+  char cmnt_[100];
+  char cmntcolor_[100];
+  emu::pc::EmuController * emuController_;
+  std::vector<emu::pc::Crate*> crateVector;
+  emu::pc::EmuEndcap * emuEndcap_;
+  emu::pc::CCB * thisCCB_;
+  emu::pc::TMB * thisTMB_;
+  emu::pc::ODAQMB* thisODMB_;
+  std::vector<emu::pc::TMB*>   tmbVector_;
+  std::vector<emu::pc::ODAQMB*> odmbVector_;
+  emu::pc::Crate *thisCrate_;
+  std::vector <emu::pc::DCFEB> thisDCFEBs_;
+  emu::pc::DCFEB* thisDCFEB_;
+  int dcfeb_;
+  int ndcfeb_; 
+  char hexbrdnum_[4];
+  std::string FirmwareDir_ ;
+  int injtime_;
+  int dinjtime_;
+  xdata::String DCFEBFirmware_;
+
+  // From LSD/include/Test.h
+  int SCABlk_[8];
+  int SCANum_[8];
+  int NCompar_[6];
+  int TCompar_[6][16];
+  int SCompar_[6][16];
+  int length; 
+  // char rawdata[20000];
+  FILE *dataout;
+  int evt;
+  // cuts
+  double   test7_minPedestal_;
+  double   test7_maxPedestal_;
+  double   test8_minPedestalRms_;
+  double   test8_maxPedestalRms_;
+  double   test9_expectedPeak_;
+  double   test9_peakVariationThresh_;
+  double   test9_xtalkThresh_;
+  double   test9_chi2Thresh_;
+  double   test10_expectedPeak_;
+  double   test10_peakVariationThresh_;
+  double   test10_xtalkThresh_;
+  double   test10_chi2Thresh_;
+  double   test11_expectedPeak_;
+  double   test11_peakVariationThresh_;
+  double   test11_xtalkThresh_;
+  double   test11_chi2Thresh_;
+  double   test13_expectedGain_;
+  double   test13_rmsGain_;
+  double   test13_iexpectedGain_;
+  double   test13_irmsGain_;
+  double   test14_maxResidual_;
+  double   test14_maxSumResidual_;
+  double   test15_maxCapVariation_;
+  double   test15_minCapVariation_;
+  double   test17_minRmsDifference_;
+  double   test18_minRmsDifference_;	
+  // For tests 17 and 18
+  //  double rmsWithoutAdapter_[6][16];
+  // time
+  struct tm *loct_;
+  time_t curt_;
+  int secs_last_;
+  // Refresh rate
+  char refresh_[10];
+  int refsec_;
+  int refreshcount_;
+  int rlastcount_;
+  int blastcount_;
+  int relastcount_;
+  int wlastcount_;
+  // control
+  int run_;
+  int first_;
+  int quit_;
+  int next_;
+  int old_;
+
+   DCFEBCheck(xdaq::ApplicationStub * s); 
+  ~DCFEBCheck();
+  void Default(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
+  void BrdPrmpt(xgi::Input * in, xgi::Output * out )throw (xgi::exception::Exception);
+  void Run(xgi::Input * in, xgi::Output * out );
+  void Update(xgi::Input * in, xgi::Output * out );
+  void Reset(xgi::Input * in, xgi::Output * out );
+  void NewBoard(xgi::Input * in, xgi::Output * out );
+  void Finis(int test);
+  void CallBack(xgi::Input * in, xgi::Output * out );
+  void Call(int i);
+  std::string DCFEBCheck::bkcolor(int i);
+  void Test1();
+  void Test2();
+  void Test3();
+  void Test4();
+  void Test5();
+  void Test6();
+  void Test7to8();
+  void Test9();
+  void Test10();
+  void Test11to13();
+  void Test14();
+  void Test15();
+  void Test16();
+  void Test17();
+  void Test18();
+  int OpticalUnpack();
+  int check_prom_readback();
+  void virginboardsetup(int brd);
+  void SetAllChannelsHot();
+  void DumpFiberonoff();
+
+  //  int calculatePedestalsAndRms(int numPulses,double pedestals[][16],double rms[][16]);
+  // int testPedestals(double ped[][16],std::string filename,double hcut_ped,double lcut_ped,bool verbose);
+  /*  int tpeak_Analyse(int pulse_mod, 
+				int pulse_mod_remain,
+				float expected_peak,
+				float peak_variation_thresh,
+				float xtalk_thresh,
+		                float chi2_thresh,
+				float adcdata_3times[][6][16][8],
+				float times[],
+				float peaks[6][16],
+		                float thermx,float thermx1,
+				FILE *output); */
+  void fastfit(float *t,float *adc,float *fitval);
+  float fivepolepolezero(double tt);
+  /* float tpeak(float t1,float t2,float t3,float v1,float v2,
+     float v3, FILE *output); */
+  int stuckBits(float test_adcdata[][8][6][16][8],
+			    int num_pulses,
+			    FILE *output);
+  /* int checkGain(float test_adcdata[][8][6][16][8],
+			    float times[],
+			    float maxResidual,
+			    FILE *output); */
+  void configureDMB();
+  int TestComparatorDAC(FILE *fp);
+  void onoff_reset();
+  void setupPulseDelays(int von,int killbuckeyes);
+  int get_split_event();
+  float correct_for_temperature(float t);
+  void averages_vs_temperature(float t);
+  char* timeheader();
+  void playsound(int i);
+ };
+
+  }}
+
+#endif

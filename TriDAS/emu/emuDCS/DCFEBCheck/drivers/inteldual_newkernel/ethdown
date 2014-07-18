@@ -1,0 +1,6 @@
+#!/bin/bash
+/sbin/ifdown eth1
+/sbin/ifdown eth2
+/sbin/rmmod e1000h
+/sbin/rmmod eth_hook
+/sbin/rmmod eth_hook_2

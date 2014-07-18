@@ -1,0 +1,12 @@
+rm /dev/schar1
+mknod /dev/schar1 c 42 0
+chmod 777 /dev/schar1
+/sbin/ifdown eth1
+/sbin/modprobe -r acenic
+/sbin/modprobe -r eth_hook 
+/sbin/modprobe eth_hook
+/sbin/modprobe acenic
+/sbin/ifconfig eth1 mtu 9000
+/sbin/ifconfig eth1 promisc
+/sbin/ifup eth1
+

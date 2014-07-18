@@ -1,0 +1,1 @@
+cmd_/home/boardtest/TriDAS/emu/emuDCS/CFEBTest/drivers/dl2khook/dl2k_driver/dl2k.ko := ld -m elf_i386 -r -o /home/boardtest/TriDAS/emu/emuDCS/CFEBTest/drivers/dl2khook/dl2k_driver/dl2k.ko /home/boardtest/TriDAS/emu/emuDCS/CFEBTest/drivers/dl2khook/dl2k_driver/dl2k.o /home/boardtest/TriDAS/emu/emuDCS/CFEBTest/drivers/dl2khook/dl2k_driver/dl2k.mod.o

@@ -1,0 +1,17 @@
+#include "i2o/i2o.h"
+
+const unsigned short I2O_INFOSPACEBROWSER_XFER = 0x010;
+const unsigned short I2O_INFOSPACEBROWSER_META = 0x011;
+const unsigned short I2O_INFOSPACEBROWSER_UREG = 0x012;
+
+typedef struct _I2O_INFOSPACEBROWSER_MESSAGE_FRAME
+{
+  
+  /**
+   * I2O header.
+   */
+  I2O_PRIVATE_MESSAGE_FRAME PvtMessageFrame;
+  
+
+} I2O_INFOSPACEBROWSER_MESSAGE_FRAME, *PI2O_INFOSPACEBROWSER_MESSAGE_FRAME;
+

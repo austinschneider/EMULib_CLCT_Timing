@@ -1,0 +1,1 @@
+make -m32 -C /lib/modules/$(/bin/uname -r)/build SUBDIRS=$PWD modules
