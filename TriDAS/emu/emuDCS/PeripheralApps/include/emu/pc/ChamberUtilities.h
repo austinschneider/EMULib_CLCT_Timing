@@ -89,7 +89,7 @@ public:
   void Print_ODMB_FIFO();
   //void DisableCCBL1A
   void CFEBTiming_DMBDebug(bool print_data = false, bool print_clct = false);
-  int * CFEBTiming_L1AWindowScan(bool print_data = false, bool print_clct = false);
+  int * CFEBTiming_L1AWindowScan(bool print_data = true, bool print_clct = true);
   int CFEBHalfStripToTMBHalfStrip(int cfeb, int halfstrip);
 
   int tmb_l1a_delay;
