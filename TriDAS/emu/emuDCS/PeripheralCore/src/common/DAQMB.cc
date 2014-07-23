@@ -9674,6 +9674,8 @@ void DAQMB::Set_TMB_TX_MODE_ShiftLayers(int cfeb_number, int hs[6]) {
 
 void DAQMB::Set_TMB_TX_MODE_ShiftLayers(int cfeb_number, char hs[6])
 {
+	write_cfeb_selector(1<<cfeb_number);
+
 	// set optical tmb path mode 5 1/2 strips
 	DEVTYPE dv = (DEVTYPE) (F1DCFEBM + cfeb_number);
 	std::cout << "Setting TMB_TX_SHIFTLAYERS dv= " << dv << std::endl;
@@ -9703,6 +9705,8 @@ void DAQMB::Set_TMB_TX_MODE_ShiftLayers(int cfeb_number, char hs[6])
 
 void DAQMB::Set_TMB_TX_MODE_Layer_Mask(int cfeb_number, char layer_mask)
 {
+	write_cfeb_selector(1<<cfeb_number);
+
 	// set optical tmb path mode 5 1/2 strips patterns
 	DEVTYPE dv = (DEVTYPE) (F1DCFEBM + cfeb_number);
 	std::cout << "Setting TMB_TX_LAYER_MASK dv= " << dv << std::endl;

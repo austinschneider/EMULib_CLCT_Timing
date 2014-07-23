@@ -64,6 +64,7 @@ public:
   void CFEBTiming(CFEBTiming_scanType);
   void CFEBTiming_with_Posnegs(CFEBTiming_scanType);
   void CFEBTiming_with_Posnegs_simple_routine(bool is_new_scan, int time_delay, int cfeb_num, unsigned int layers, unsigned int pattern, int halfstrip);
+  void CFEBTiming_with_Posnegs_basic_scan();
   void CFEBTiming_without_Posnegs();
   void CFEBTiming_Configure(int * tof = NULL);
   void CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, unsigned int layer_mask, unsigned int pattern, unsigned int halfstrip, unsigned int n_pulses = 1, unsigned int pulse_delay = 0x4f);
@@ -87,10 +88,14 @@ public:
   int GetExtTrigDelay();
   void Clear_ODMB_FIFO();
   void Print_ODMB_FIFO();
+  void Print_CLCT0();
   //void DisableCCBL1A
-  void CFEBTiming_DMBDebug(bool print_data = false, bool print_clct = false);
+  void CFEBTiming_DMBDebug(bool print_data = true, bool print_clct = true);
   int * CFEBTiming_L1AWindowScan(bool print_data = true, bool print_clct = true);
   int CFEBHalfStripToTMBHalfStrip(int cfeb, int halfstrip);
+
+  void original_routine();
+  void new_routine();
 
   int tmb_l1a_delay;
   int ccb_l1a_delay;
@@ -324,8 +329,7 @@ public:
   	return same;
   }
 
-  inline void ConfigureTMB(const CFEBTiming_Configuration & config) {
-  	thisCCB_->setCCBMode(CCB::DLOG);
+  inline void ConfigureTMB(const CFEBTiming_Configuration & config, int * cfeb_tof_delay = NULL) {
 
   	usleep(1000);
 
@@ -363,11 +367,14 @@ public:
   		thisTMB_->GetCfeb3TOFDelay(),
   		thisTMB_->GetCfeb4TOFDelay() };
 
-  	thisTMB_->SetCfeb0TOFDelay(test_cfeb_tof_delay[0]);
-  	thisTMB_->SetCfeb1TOFDelay(test_cfeb_tof_delay[1]);
-  	thisTMB_->SetCfeb2TOFDelay(test_cfeb_tof_delay[2]);
-  	thisTMB_->SetCfeb3TOFDelay(test_cfeb_tof_delay[3]);
-  	thisTMB_->SetCfeb4TOFDelay(test_cfeb_tof_delay[4]);
+  	if(cfeb_tof_delay == NULL)
+  		cfeb_tof_delay = test_cfeb_tof_delay;
+
+  	thisTMB_->SetCfeb0TOFDelay(cfeb_tof_delay[0]);
+  	thisTMB_->SetCfeb1TOFDelay(cfeb_tof_delay[1]);
+  	thisTMB_->SetCfeb2TOFDelay(cfeb_tof_delay[2]);
+  	thisTMB_->SetCfeb3TOFDelay(cfeb_tof_delay[3]);
+  	thisTMB_->SetCfeb4TOFDelay(cfeb_tof_delay[4]);
   	thisTMB_->WriteRegister(vme_ddd1_adr); // Write phase and TOF delay to hardware
   	usleep(1000);
   	thisTMB_->WriteRegister(vme_ddd2_adr); //
@@ -382,6 +389,7 @@ public:
 
   	usleep(1000);
 
+  	/*
   	int TimeDelay = 8;
 
   	std::cout << " TimeDelay " << TimeDelay << std::endl;
@@ -395,6 +403,7 @@ public:
   	usleep(1000);
   	thisTMB_->tmb_clk_delays(TimeDelay,4);
   	usleep(1000);
+  	*/
   	// End new lines from Stan's code
 
 
@@ -409,9 +418,13 @@ public:
   inline void CFEBTiming_ConfigureLevel(CFEBTiming_Configuration & config, int level = 0) {
   	(*MyOutput_) << "CFEBTiming Configure Level " << level << std::endl;
   	if(level <= 0) {
+  		thisCCB_->setCCBMode(CCB::VMEFPGA);
+			thisCCB_->hardReset();
+			thisCCB_->setCCBMode(CCB::DLOG);
+
   		SetDCFEBsPipelineDepth(config.cfeb_pipeline_depth); // Set pipeline depth, does not have to be exact (~60)
   		usleep(1000);
-  		thisTMB_->tmb_hard_reset_tmb_fpga(); // Hard reset the tmb to return to default settings
+  		//thisTMB_->tmb_hard_reset_tmb_fpga(); // Hard reset the tmb to return to default settings
   		usleep(1000);
   		CFEBTiming_ConfigureODMB(); // Do some odmb configuration?
   		usleep(1000);
@@ -432,6 +445,7 @@ public:
   		usleep(1000);
   	}
   	if(level <= 1) {
+			thisCCB_->setCCBMode(CCB::DLOG);
   		ConfigureTMB(config);
   		usleep(1000);
   	}

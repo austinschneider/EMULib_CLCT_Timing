@@ -554,8 +554,8 @@ EmuPeripheralCrateConfig::EmuPeripheralCrateConfig(xdaq::ApplicationStub * s): E
   MPCWriteValue_ = -1;
   //
   CalibrationState_ = "None";
-  standalone_ = false;
-  //standalone_ = true;
+  //standalone_ = false;
+  standalone_ = true;
   //
   for (int i=0; i<9; i++) {
     able_to_load_alct[i] = -1;  
@@ -5736,7 +5736,7 @@ void EmuPeripheralCrateConfig::CFEBTimingDebug(xgi::Input * in, xgi::Output * ou
   }
   //
   MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
-  MyTest[tmb][current_crate_].CFEBTiming_Debug();
+  MyTest[tmb][current_crate_].CFEBTiming_with_Posnegs_basic_scan();
   MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
   //
   this->ChamberTests(in,out);
@@ -5871,7 +5871,7 @@ void EmuPeripheralCrateConfig::CFEBTimingL1AWindowScan(xgi::Input * in, xgi::Out
 	}
 	//
 	MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
-	MyTest[tmb][current_crate_].CFEBTiming_L1AWindowScan(print_data, print_clct);
+	MyTest[tmb][current_crate_].CFEBTiming_L1AWindowScan();
 	MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
 	//
 	this->ChamberTests(in,out);
