@@ -2154,8 +2154,6 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	int last_hs[MaxCFEB]; for(int i=0; i<MaxCFEB; ++i) last_hs[i] = -1;
 	int mapping[MaxCFEB][MaxHalfStrip]; for(int i=0; i<MaxCFEB; ++i) for(int j=0; j<MaxHalfStrip; ++j) mapping[i][j] = -1;
 
-	int ihs = 0;
-
 	if(is_random_halfstrip)
 		halfstrip = -1;
 
@@ -2178,7 +2176,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 				int last_halfstrip = -1;
 
-				//for(int ihs = 0; (is_random_halfstrip)?(ihs<MaxHalfStrip):(ihs<1); ++ihs) {
+				for(int ihs = 0; (is_random_halfstrip)?(ihs<MaxHalfStrip):(ihs<1); ++ihs) {
 
 				thisCCB_->WriteRegister(thisCCB_->L1Reset, 0);
 				thisTMB_->ResetCounters();
@@ -2273,7 +2271,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 			  //if(thisTMB_->GetCLCT0keyHalfStrip() != 1)
 
 				//thisTMB_->ResetCounters();
-				//}
+				}
 			}
 			ihs = (ihs+1) % MaxHalfStrip;
 		}  //for (TimeDelay)
