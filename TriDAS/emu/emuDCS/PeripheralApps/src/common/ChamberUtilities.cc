@@ -2150,7 +2150,8 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 	thisTMB_->RedirectOutput(MyOutput_);
 
-	int pulse_count[2][MaxTimeDelay][256]; memset(pulse_count, 0, sizeof(pulse_count));
+	int pulse_count[2][MaxTimeDelay][224]; memset(pulse_count, 0, sizeof(pulse_count));
+	int pulse_count_hs_integral[2][MaxTimeDelay]; memset(pulse_count_hs_integral, 0, sizeof(pulse_count_hs_integral));
 	int last_hs[MaxCFEB]; for(int i=0; i<MaxCFEB; ++i) last_hs[i] = -1;
 	int mapping[MaxCFEB][MaxHalfStrip]; for(int i=0; i<MaxCFEB; ++i) for(int j=0; j<MaxHalfStrip; ++j) mapping[i][j] = -1;
 
@@ -2229,12 +2230,13 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 				if(good_clct) {
 					++pulse_count[posneg][TimeDelay][thisTMB_->GetCLCT0keyHalfStrip()];
+					++pulse_count_hs_integral[posneg][TimeDelay];
 				}
 
 				if(is_random_halfstrip)
-					clct_file << "Random hs: " << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  random_ihs_list[ihs] << std::endl;
+					clct_file << "Random hs: " << std::dec << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  random_ihs_list[ihs] << std::endl;
 				else
-					clct_file << "Single hs: " << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  halfstrip << std::endl;
+					clct_file << "Single hs: " << std::dec << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  halfstrip << std::endl;
 
 				//
 				//thisTMB_->RedirectOutput(MyOutput_);
@@ -2287,7 +2289,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 		}
 		(*MyOutput_) << std::endl;
 		(*MyOutput_) << "HS------------------------------" << std::endl;
-		for(int hs = 0; hs<256; ++hs) {
+		for(int hs = 0; hs<224; ++hs) {
 			(*MyOutput_) << std::setw(5) << hs << std::setw(2) << "|";
 			for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
 				(*MyOutput_) << std::setw(5) << pulse_count[posneg][TimeDelay][hs];
@@ -2296,6 +2298,23 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 		}
 		(*MyOutput_) << "--------------------------------" << std::endl;
 	}
+
+	(*MyOutput_) << std::endl;
+
+	(*MyOutput_) << std::setw(5) << "RX" << std::setw(2) << "|";
+	for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
+		(*MyOutput_) << std::setw(5) << TimeDelay;
+	}
+	(*MyOutput_) << std::endl;
+	(*MyOutput_) << "PN------------------------------" << std::endl;
+	for(int posneg = 0; posneg<2; ++posneg) {
+		(*MyOutput_) << std::setw(5) << posneg << std::setw(2) << "|";
+		for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
+			(*MyOutput_) << std::setw(5) << pulse_count_hs_integral[posneg][TimeDelay];
+		}
+		(*MyOutput_) << std::endl;
+	}
+	(*MyOutput_) << "--------------------------------" << std::endl;
 
 	(*MyOutput_) << "bad_valid: " << bad_valid << std::endl;
 	(*MyOutput_) << "bad_hits: " << bad_hits << std::endl;
