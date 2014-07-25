@@ -708,6 +708,18 @@ void ChamberUtilities::SetCfebRxClockDelay(int delay) {
 	//usleep(10000);
 }
 
+int ChamberUtilities::GetOutputHalfStrip(int tmb_compile_type, int cfeb, int input_halfstrip) {
+	int output_hs = -1;
+	if(tmb_compile_type == 0xc) {
+		if(cfeb >= 0 && cfeb <= 3)
+			output_hs = 32*cfeb + input_halfstrip;
+		else if(cfeb >= 4 && cfeb <= 6)
+			output_hs = 223 - 32*(cfeb - 4) - input_halfstrip;
+	}
+
+	return output_hs;
+}
+
 void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, unsigned int layer_mask, unsigned int pattern, unsigned int halfstrip, unsigned int n_pulses, unsigned int pulse_delay) {
 	std::cout << "Start: " << __PRETTY_FUNCTION__  << std::endl;
 	const int MaxCFEB = 5;
@@ -2083,7 +2095,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 	// Define test parameters
 	//const int MaxCFEB = thisDMB_->cfebs_.size();
-	const int MaxCFEB = 5;
+	const int MaxCFEB = 7;
 	const int MaxTimeDelay=25;
 	const int MaxHalfStrip = 32;
 	const int MaxLayers = 6;
@@ -2091,6 +2103,9 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	const bool is_cfeb_scan = cfeb_num < 0;
 	const bool is_random_halfstrip = halfstrip < 0;
 	const bool is_single_pulse = !(is_timing_scan|is_cfeb_scan|is_random_halfstrip);
+
+	thisTMB_->ReadRegister(non_trig_readout_adr);
+	int tmb_compile_type = thisTMB_->GetReadTMBFirmwareCompileType();
 
 	(*MyOutput_) << "*************************************" << std::endl;
 	(*MyOutput_) << "          Test CFEB Timing           " << std::endl;
@@ -2220,20 +2235,25 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 				int expected_hit = 6;
 				int expected_pattern = pattern;
 				int expected_valid = 0x1;
-				//int expected_key_hs = 0;
+				int expected_key_hs = -1;
+				if(is_random_halfstrip)
+					expected_key_hs = GetOutputHalfStrip(tmb_compile_type, cfeb, random_ihs_list[ihs]);
+				else
+					expected_key_hs = GetOutputHalfStrip(tmb_compile_type, cfeb, halfstrip);
 
 				bool good_clct = true;
 
 				good_clct &= thisTMB_->GetCLCT0Nhit() == expected_hit;
 				good_clct &= thisTMB_->GetCLCT0PatternId() == expected_pattern;
 				good_clct &= thisTMB_->GetCLCT0Valid() == expected_valid;
+				good_clct &= thisTMB_->GetCLCT0keyHalfStrip() == expected_key_hs;
 				if(is_random_halfstrip)
 					good_clct &= thisTMB_->GetCLCT0keyHalfStrip() != last_hs[cfeb];
 
 				last_hs[cfeb] = thisTMB_->GetCLCT0keyHalfStrip();
 
 				if(!good_clct) {
-					++pulse_count[posneg][TimeDelay][thisTMB_->GetCLCT0keyHalfStrip()];
+					++pulse_count[posneg][TimeDelay][expected_key_hs];
 					++pulse_count_hs_integral[posneg][TimeDelay];
 					error_file << "----------------" << std::endl;
 					error_file << "!good_clct:";
@@ -2244,10 +2264,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 					error_file << "Expected:" << std::endl;
 					error_file << "\thit = " << std::setw(2) << std::dec << expected_hit;
 					error_file << " pat = " << std::setw(1) << std::hex << expected_pattern;
-					if(is_random_halfstrip)
-						error_file << " hs = " << std::setw(1) << std::dec << random_ihs_list[ihs];
-					else
-						error_file << " hs = " << std::setw(1) << std::dec << halfstrip;
+					error_file << " hs = " << std::setw(1) << std::dec << expected_key_hs;
 					error_file << std::endl;
 					error_file << "Read:" << std::endl;
 					error_file << "\thit = " << std::setw(2) << std::dec << thisTMB_->GetCLCT0Nhit();
@@ -2259,9 +2276,9 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 				}
 
 				if(is_random_halfstrip)
-					clct_file << "Random hs: " << std::dec << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  random_ihs_list[ihs] << std::endl;
+					clct_file << "Random hs: " << std::dec << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  expected_key_hs << std::endl;
 				else
-					clct_file << "Single hs: " << std::dec << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  halfstrip << std::endl;
+					clct_file << "Single hs: " << std::dec << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  expected_key_hs << std::endl;
 
 				//
 				//thisTMB_->RedirectOutput(MyOutput_);
@@ -2275,7 +2292,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 			  if(thisTMB_->GetCLCT0Nhit() != n_layers) {
 			  	++bad_hits;
-			  	++hit_fails[posneg][TimeDelay][thisTMB_->GetCLCT0keyHalfStrip()];
+			  	++hit_fails[posneg][TimeDelay][expected_key_hs];
 			  }
 
 			  //(*MyOutput_) << "hits: " << n_layers << " | " << thisTMB_->GetCLCT0Nhit() << std::endl;
