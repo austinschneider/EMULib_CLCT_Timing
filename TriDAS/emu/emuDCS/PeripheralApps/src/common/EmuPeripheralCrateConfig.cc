@@ -4795,7 +4795,7 @@ void EmuPeripheralCrateConfig::ChamberTests(xgi::Input * in, xgi::Output * out )
 			*out << cgicc::select() << std::endl;
 		*out << cgicc::td();
 		*out << cgicc::td().set("ALIGN", "left") << std::endl;
-			for(int i=0; i<6; ++i) *out << cgicc::input().set("type", "checkbox").set("name", "layers").set("checked", "checked").set("value", toolbox::toString("%d", i)) << std::endl;
+			for(int i=0; i<6; ++i) *out << cgicc::input().set("type", "checkbox").set("name", toolbox::toString("layer_%d", i)).set("checked", "checked") << std::endl;
 			//*out << cgicc::input().set("type", "text").set("name", "layers").set("size", "20").set("value", "") << std::endl;
 		*out << cgicc::td();
 		*out << cgicc::td().set("ALIGN", "left") << std::endl;
@@ -4808,6 +4808,10 @@ void EmuPeripheralCrateConfig::ChamberTests(xgi::Input * in, xgi::Output * out )
 				*out << cgicc::option().set("value", toolbox::toString("%d", -1)) << "Random" << cgicc::option() << std::endl;
 				for(int i=0; i<32; ++i) *out << cgicc::option().set("value", toolbox::toString("%d", i)) << i << cgicc::option() << std::endl;
 			*out << cgicc::select() << std::endl;
+		*out << cgicc::td();
+		*out << cgicc::td();
+		*out << " Print data:";
+		*out << cgicc::input().set("type", "checkbox").set("name", "print_data").set("checked", "checked") << std::endl;
 		*out << cgicc::td();
 		*out << cgicc::td().set("ALIGN", "left") << std::endl;
     *out << cgicc::input().set("type","submit").set("value", "Simple scan").set("style", "color:blue") << std::endl;
@@ -4897,6 +4901,38 @@ void EmuPeripheralCrateConfig::ChamberTests(xgi::Input * in, xgi::Output * out )
 		*out << cgicc::form() << std::endl ;
     //
     *out << cgicc::td();
+    //
+    *out << cgicc::td();
+		//
+		urn = toolbox::toString("/%s/CFEBTimingSetTMBL1ADelay",getApplicationDescriptor()->getURN().c_str());
+		*out << cgicc::form().set("method","GET").set("action",urn) << std::endl ;
+		*out << cgicc::input().set("type","submit").set("value","CFEBTimingSetTMBL1ADelay") << std::endl;
+		*out << cgicc::select().set("name", "tmb_l1a_delay") << std::endl;
+		for(int i=0; i<256; ++i) *out << cgicc::option().set("value", toolbox::toString("%d", i)) << i << cgicc::option() << std::endl;
+		*out << cgicc::select() << std::endl;
+		sprintf(buf,"%d",tmb);
+		*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
+		sprintf(buf,"%d",dmb);
+		*out << cgicc::input().set("type","hidden").set("value",buf).set("name","dmb");
+		*out << cgicc::form() << std::endl ;
+		//
+		*out << cgicc::td();
+		//
+		*out << cgicc::td();
+		//
+		urn = toolbox::toString("/%s/CFEBTimingSetCCBL1ADelay",getApplicationDescriptor()->getURN().c_str());
+		*out << cgicc::form().set("method","GET").set("action",urn) << std::endl ;
+		*out << cgicc::input().set("type","submit").set("value","CFEBTimingSetCCBL1ADelay") << std::endl;
+		*out << cgicc::select().set("name", "ccb_l1a_delay") << std::endl;
+		for(int i=0; i<256; ++i) *out << cgicc::option().set("value", toolbox::toString("%d", i)) << i << cgicc::option() << std::endl;
+		*out << cgicc::select() << std::endl;
+		sprintf(buf,"%d",tmb);
+		*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
+		sprintf(buf,"%d",dmb);
+		*out << cgicc::input().set("type","hidden").set("value",buf).set("name","dmb");
+		*out << cgicc::form() << std::endl ;
+		//
+		*out << cgicc::td();
     //
     *out << cgicc::tr();
     //
@@ -5645,9 +5681,10 @@ void EmuPeripheralCrateConfig::CFEBTimingSimpleScan(xgi::Input * in, xgi::Output
   bool is_inject_scan = false;
 	int time_delay = -1;
 	int cfeb_num = 3;
-	unsigned int layers = 1;
+	unsigned int layers = 0;
 	unsigned int pattern = 1;
 	int halfstrip = 16;
+	bool print_data = false;
 
   //
   name = cgi.getElement("is_inject_scan");
@@ -5665,17 +5702,9 @@ void EmuPeripheralCrateConfig::CFEBTimingSimpleScan(xgi::Input * in, xgi::Output
 		cfeb_num = cgi["cfeb_num"]->getIntegerValue();
 	}
 	//
-	std::vector<cgicc::FormEntry> layers_vec;
-	cgi.getElement("layers", layers_vec);
-	if(! layers_vec.empty()) {
-		unsigned int temp_layers = 0;
-	  for(int i = 0; i < layers_vec.size(); ++i) {
-	    temp_layers |= 0x1 << layers_vec[i].getIntegerValue();
-	  }
-	  layers = temp_layers;
-	}
-	else {
-		layers = 0x1f;
+	for(int i = 0; i<6; ++i) {
+		if(cgi.queryCheckbox(toolbox::toString("layer_%d", i)))
+			layers |= 0x1 << i;
 	}
 	//
 	name = cgi.getElement("pattern");
@@ -5688,15 +5717,18 @@ void EmuPeripheralCrateConfig::CFEBTimingSimpleScan(xgi::Input * in, xgi::Output
 		halfstrip = cgi["halfstrip"]->getIntegerValue();
 	}
 
+	print_data = cgi.queryCheckbox("print_data");
+
 	std::cout << "is_inject_scan: " << is_inject_scan << std::endl;
 	std::cout << "time_delay: " << time_delay << std::endl;
 	std::cout << "cfeb_num: " << cfeb_num << std::endl;
 	std::cout << "layers: " << layers << std::endl;
 	std::cout << "pattern: " << pattern << std::endl;
 	std::cout << "halfstrip: " << halfstrip << std::endl;
+	std::cout << "print_data: " << print_data << std::endl;
 	//
   MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
-  MyTest[tmb][current_crate_].CFEBTiming_with_Posnegs_simple_routine(is_inject_scan, time_delay, cfeb_num, layers, pattern, halfstrip);
+  MyTest[tmb][current_crate_].CFEBTiming_with_Posnegs_simple_routine(is_inject_scan, time_delay, cfeb_num, layers, pattern, halfstrip, print_data);
   MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
   //
   this->ChamberTests(in,out);
@@ -5928,11 +5960,105 @@ void EmuPeripheralCrateConfig::CFEBTimingSetTOF(xgi::Input * in, xgi::Output * o
 }
 
 void EmuPeripheralCrateConfig::CFEBTimingSetTMBL1ADelay(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception) {
+  //
+  std::cout << "CFEBTiming Set TMB L1A Delay" << std::endl;
+  LOG4CPLUS_INFO(getApplicationLogger(), "CFEBTiming");
+  //
+  cgicc::Cgicc cgi(in);
+  //
+  int tmb=0, dmb=0;
+  //
+  cgicc::form_iterator name = cgi.getElement("dmb");
+  //
+  if(name != cgi.getElements().end()) {
+    dmb = cgi["dmb"]->getIntegerValue();
+    std::cout << "CFEBTiming ME1/1A:  DMB " << dmb << std::endl;
+    DMB_ = dmb;
+  } else {
+    std::cout << "CFEBTiming ME1/1A:  No dmb" << std::endl;
+    dmb = DMB_;
+  }
+  //
+  name = cgi.getElement("tmb");
+  //
+  if(name != cgi.getElements().end()) {
+    tmb = cgi["tmb"]->getIntegerValue();
+    std::cout << "CFEBTiming ME1/1A:  TMB " << tmb << std::endl;
+    TMB_ = tmb;
+  } else {
+    std::cout << "CFEBTiming ME1/1A:  No tmb" << std::endl;
+    tmb = TMB_;
+  }
 
+  int tmb_l1a_delay = -1;
+
+  //
+  name = cgi.getElement("tmb_l1a_delay");
+	if(name != cgi.getElements().end()) {
+		tmb_l1a_delay = cgi["tmb_l1a_delay"]->getIntegerValue();
+	}
+
+	std::cout << "tmb_l1a_delay: " << tmb_l1a_delay << std::endl;
+	//
+	if(tmb_l1a_delay >= 0) {
+		MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
+		MyTest[tmb][current_crate_].tmb_l1a_delay = tmb_l1a_delay;
+		MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
+	}
+  //
+  this->ChamberTests(in,out);
+  //
 }
 
 void EmuPeripheralCrateConfig::CFEBTimingSetCCBL1ADelay(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception) {
+  //
+  std::cout << "CFEBTiming Set CCB L1A Delay" << std::endl;
+  LOG4CPLUS_INFO(getApplicationLogger(), "CFEBTiming");
+  //
+  cgicc::Cgicc cgi(in);
+  //
+  int tmb=0, dmb=0;
+  //
+  cgicc::form_iterator name = cgi.getElement("dmb");
+  //
+  if(name != cgi.getElements().end()) {
+    dmb = cgi["dmb"]->getIntegerValue();
+    std::cout << "CFEBTiming ME1/1A:  DMB " << dmb << std::endl;
+    DMB_ = dmb;
+  } else {
+    std::cout << "CFEBTiming ME1/1A:  No dmb" << std::endl;
+    dmb = DMB_;
+  }
+  //
+  name = cgi.getElement("tmb");
+  //
+  if(name != cgi.getElements().end()) {
+    tmb = cgi["tmb"]->getIntegerValue();
+    std::cout << "CFEBTiming ME1/1A:  TMB " << tmb << std::endl;
+    TMB_ = tmb;
+  } else {
+    std::cout << "CFEBTiming ME1/1A:  No tmb" << std::endl;
+    tmb = TMB_;
+  }
 
+  int ccb_l1a_delay = -1;
+
+  //
+  name = cgi.getElement("ccb_l1a_delay");
+	if(name != cgi.getElements().end()) {
+		ccb_l1a_delay = cgi["ccb_l1a_delay"]->getIntegerValue();
+	}
+
+	std::cout << "ccb_l1a_delay: " << ccb_l1a_delay << std::endl;
+	//
+	if(ccb_l1a_delay >= 0) {
+		MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
+		MyTest[tmb][current_crate_].ccb_l1a_delay = ccb_l1a_delay;
+		MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
+	}
+  //
+  this->ChamberTests(in,out);
+  //
 }
 
 void EmuPeripheralCrateConfig::Step_21(xgi::Input * in, xgi::Output * out )

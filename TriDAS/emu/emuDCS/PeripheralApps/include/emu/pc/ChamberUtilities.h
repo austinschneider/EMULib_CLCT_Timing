@@ -63,7 +63,7 @@ public:
   void CFEBTiming();                           //default is normal_scan
   void CFEBTiming(CFEBTiming_scanType);
   void CFEBTiming_with_Posnegs(CFEBTiming_scanType);
-  void CFEBTiming_with_Posnegs_simple_routine(bool is_new_scan, int time_delay, int cfeb_num, unsigned int layers, unsigned int pattern, int halfstrip);
+  void CFEBTiming_with_Posnegs_simple_routine(bool is_new_scan, int time_delay, int cfeb_num, unsigned int layers, unsigned int pattern, int halfstrip, bool print_data = false);
   void CFEBTiming_with_Posnegs_basic_scan();
   void CFEBTiming_without_Posnegs();
   void CFEBTiming_Configure(int * tof = NULL);
@@ -425,7 +425,7 @@ public:
 
   		SetDCFEBsPipelineDepth(config.cfeb_pipeline_depth); // Set pipeline depth, does not have to be exact (~60)
   		usleep(1000);
-  		//thisTMB_->tmb_hard_reset_tmb_fpga(); // Hard reset the tmb to return to default settings
+  		thisTMB_->tmb_hard_reset_tmb_fpga(); // Hard reset the tmb to return to default settings
   		usleep(1000);
   		CFEBTiming_ConfigureODMB(); // Do some odmb configuration?
   		usleep(1000);
