@@ -7470,6 +7470,18 @@ int TMB::FillTMBRegister(unsigned long int address) {
     InsertValueIntoDataWord(cfeb3_tof_delay_,cfeb3_tof_delay_bithi,cfeb3_tof_delay_bitlo,&data_word);
     InsertValueIntoDataWord(cfeb4_tof_delay_,cfeb4_tof_delay_bithi,cfeb4_tof_delay_bitlo,&data_word);
     //
+  } else if ( address == vme_dddoe_adr ) {
+  	//------------------------------------------------------------------
+    //0X1C = ADR_DDDOE:  3D3444 Delay Chip Output Enables
+    //------------------------------------------------------------------
+    if (GetHardwareVersion() == 2) {
+    	//data_word = 0xff7; // enable all clocks except the RPC clock (which otherwise causes problems in OTMB->ALCT communication for certain ALCT TOF delay settings)
+    	data_word = 0x005; // disable all unused clocks in OTMB (according to Jason)
+    }
+    else {
+    	data_word = 0xfff; // enable all clocks in TMB
+    }
+    //
   } else if ( address == vme_ratctrl_adr ) {
     //------------------------------------------------------------------
     //0X1E = ADR_RATCTRL:  RAT Module Control

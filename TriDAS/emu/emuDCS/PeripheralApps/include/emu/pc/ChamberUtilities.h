@@ -407,6 +407,7 @@ public:
   	*/
   	// End new lines from Stan's code
 
+		thisTMB_->WriteRegister(vme_dddoe_adr);
 
   	thisTMB_->FireDDDStateMachine();
   	//

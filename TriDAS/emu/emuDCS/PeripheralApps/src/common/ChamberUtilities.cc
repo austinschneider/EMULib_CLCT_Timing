@@ -2078,6 +2078,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	std::fstream clct_file("/home/cscme11/aschneid/me11/SimpleScan_CLCTs.txt", std::ios_base::out);
 	std::fstream out_file("/home/cscme11/aschneid/me11/SimpleScan_Output.txt", std::ios_base::out);
 	std::fstream error_file("/home/cscme11/aschneid/me11/SimpleScan_ErrorSummary.txt", std::ios_base::out);
+	std::fstream packets_file("/home/cscme11/aschneid/me11/SimpleScan_Packets.txt", std::ios_base::out);
 	std::ostream * web_out = MyOutput_;
 	//
 	// This code automatically handles the transition into and out of the
