@@ -1073,6 +1073,7 @@ public:
   //!cfeb_inj_en_sel = [0-31]... 5 bit mask, 1 bit per CFEB -> each bit [0,1] = [disable,enable] CFEB for injector trigger
   inline void SetEnableCLCTInject(int cfeb_inj_en_sel) { cfeb_inj_en_sel_ = cfeb_inj_en_sel; }  
   inline int  GetEnableCLCTInject() { return cfeb_inj_en_sel_; }
+  inline int  GetReadEnableCLCTInject() { return read_cfeb_inj_en_sel_; }
   //
   //!start_pattern_inj = 1 = start pattern injector
   inline void SetStartPatternInjector(int start_pattern_inj) { start_pattern_inj_ = start_pattern_inj; } 
@@ -1147,7 +1148,8 @@ public:
   inline int  GetCfebEnable() { return cfebs_enabled_; }
   //
   //! value = 42, 68 = VME register which controls the CFEB mask.  See TMB documentation before setting this value.
-  void Set_cfeb_enable_source(int value); 
+  void Set_cfeb_enable_source(int value);
+  inline void SetCfebEnableSource(int cfeb_enable_source) { cfeb_enable_source_ = cfeb_enable_source; }
   // this is the user interface to SetCfebEnableSource_(int cfeb_enable_source)...
   //
   inline int  GetCfebEnableSource() { return cfeb_enable_source_; }

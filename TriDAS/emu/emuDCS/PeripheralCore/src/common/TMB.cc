@@ -2622,7 +2622,7 @@ void TMB::EnableInternalL1aSequencer(){
   //
 }
 
-void TMB::EnableCLCTInputs(int CLCTInputs = 0x1f){
+void TMB::EnableCLCTInputs(int CLCTInputs = 0x7f){
 //
    int adr;
    int rd_data;
@@ -2630,8 +2630,18 @@ void TMB::EnableCLCTInputs(int CLCTInputs = 0x1f){
    tmb_vme(VME_READ,adr,sndbuf,rcvbuf,NOW);
    rd_data   = ((rcvbuf[0]&0xff) << 8) | (rcvbuf[1]&0xff) ;
    sndbuf[0] = rcvbuf[0];
-   sndbuf[1] = (rcvbuf[1] & 0xe0) | CLCTInputs ;
+   sndbuf[1] = (rcvbuf[1] & 0xe0) | (CLCTInputs & 0x1f) ;
    tmb_vme(VME_WRITE,adr,sndbuf,rcvbuf,NOW);
+
+   if(hardware_version_ == 2) {
+  	 adr = extend_adr;
+  	 tmb_vme(VME_READ,adr,sndbuf,rcvbuf,NOW);
+  	 rd_data = ((rcvbuf[0]&0xff) << 8) | (rcvbuf[1]&0xff);
+  	 sndbuf[0] = rcvbuf[0];
+  	 sndbuf[1] = (rcvbuf[1] & 0xfc) | ((CLCTInputs >> 5) & 0x3);
+  	 tmb_vme(VME_WRITE,adr,sndbuf,rcvbuf,NOW);
+   }
+
 //
 }
 
@@ -6507,6 +6517,8 @@ void TMB::DecodeTMBRegister_(unsigned long int address, int data) {
       read_badbits_[layer][distrip] = ExtractValueFromData(data,bit_in_register,bit_in_register);
     }
     //
+  } else if (address == extend_adr) {
+  	//ExtractValueFromData(data, )
   }
   //
   // combinations of bits which say which trgmode_ we are using....

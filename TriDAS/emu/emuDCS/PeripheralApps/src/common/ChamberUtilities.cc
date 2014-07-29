@@ -738,6 +738,7 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 	}
 	//
 	if(is_inject_scan){
+
 		thisDMB_->Set_TMB_TX_MODE(cfeb, 5); // Set the mode of the CFEB in question
 		usleep(1000);
 		thisDMB_->shift_all(KILL_CHAN);
@@ -1287,6 +1288,8 @@ void ChamberUtilities::Clear_ODMB_FIFO() {
 
 void ChamberUtilities::Print_ODMB_FIFO() {
 	int n_words = thisDMB_->ReadRegister(0x550C);
+	if(n_words > 1372) n_words = thisDMB_->ReadRegister(0x550C);
+	if(n_words > 1372) n_words = 1372;
 	int words[n_words]; memset(words, 0, sizeof(words));
 	if(n_words == 0) {
 		(*MyOutput_) << "\n0000\n";
@@ -1309,6 +1312,13 @@ void ChamberUtilities::Print_CLCT0() {
 	(*MyOutput_) << std::endl;
 }
 
+void ChamberUtilities::Print_CFEB_Masks() {
+	thisTMB_->ReadRegister(seq_trig_en_adr);
+	thisTMB_->ReadRegister(cfeb_inj_adr);
+	thisTMB_->GetReadEnableCLCTInject();
+
+
+}
 
 int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clct) {
 	std::fstream out_file("/home/cscme11/aschneid/me11/L1AWindowScan_Output.txt", std::ios_base::out);
@@ -1445,12 +1455,15 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 
 	bool done = false;
 
-	const int max_windows = 10;
+	const int max_windows = 4;
 	int windows[max_windows][4]; memset(windows, 0, sizeof(windows));
 	int n_windows = 0;
 	bool in_window = false;
 
 	int last_pulses = 0;
+
+	thisTMB_->ReadRegister(seqmod_adr);
+	thisTMB_->PrintTMBRegister(seqmod_adr);
 
 	for(int l1a_ext_delay=min_l1a_ext_delay; l1a_ext_delay<=max_l1a_ext_delay && (!done); ++l1a_ext_delay)  {
 
@@ -1629,7 +1642,7 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 		ret[0] = windows[window_index][0];
 		ret[1] = window_average[window_index];
 
-		this->ccb_l1a_delay = ret[1];
+		this->ccb_l1a_delay = ret[0];
 		this->tmb_l1a_delay = ret[1];
 	}
 	else {
@@ -2079,6 +2092,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	std::fstream out_file("/home/cscme11/aschneid/me11/SimpleScan_Output.txt", std::ios_base::out);
 	std::fstream error_file("/home/cscme11/aschneid/me11/SimpleScan_ErrorSummary.txt", std::ios_base::out);
 	std::fstream packets_file("/home/cscme11/aschneid/me11/SimpleScan_Packets.txt", std::ios_base::out);
+	std::fstream bad_packets_file("/home/cscme11/aschneid/me11/SimpleScan_BadPackets.txt", std::ios_base::out);
 	std::ostream * web_out = MyOutput_;
 	//
 	// This code automatically handles the transition into and out of the
@@ -2147,15 +2161,25 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	config.fifo_pretrig = 5;
 	config.fifo_no_hits_raw = 0;
 	config.tmb_internal_l1a = 0;
-	config.ccb_ext_trig_delay = 0;
-	config.tmb_l1a_delay = 0;
+	config.ccb_ext_trig_delay = this->ccb_l1a_delay;
+	config.tmb_l1a_delay = this->tmb_l1a_delay;
 	config.cfeb_rx_posneg = 0;
 	config.cfeb_rx_clock_delay = 0;
 
-	thisCCB_->setCCBMode(CCB::VMEFPGA);
-	thisCCB_->hardReset();
-	thisCCB_->setCCBMode(CCB::DLOG);
-	ConfigureTMB(config);
+	CFEBTiming_PrintConfiguration(config);
+
+	if(print_data) {
+		CFEBTiming_ConfigureLevel(config);
+		usleep(1000000);
+		CFEBTiming_ConfigureLevel(config);
+		usleep(1000000);
+	}
+	else {
+		thisCCB_->setCCBMode(CCB::VMEFPGA);
+		thisCCB_->hardReset();
+		thisCCB_->setCCBMode(CCB::DLOG);
+		ConfigureTMB(config);
+	}
 
 	usleep(10000);
 
@@ -2198,26 +2222,40 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 	clct_file << "--------------" << std::endl << std::endl;
 
+	unsigned long long uid = 0;
+
+	bool done = false;
+
 	int last_halfstrip[MaxCFEB]; for(int i=0; i<MaxCFEB; ++i) last_halfstrip[i] = -1;
-	for (int posneg=0; posneg<2; posneg++) {
+	for (int posneg=0; posneg<2 && !done; posneg++) {
 		// set the same value of posneg for all CFEB's...
-		SetCfebRxPosNeg(posneg);
 		config.cfeb_rx_posneg = posneg;
+		if(print_data)
+			CFEBTiming_ConfigureLevel(config,2);
+		else
+			SetCfebRxPosNeg(posneg);
 		//
-		for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay){
+		for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay) && !done; ++TimeDelay){
 			//
 			//(*MyOutput_) << "Next event:  posneg=" << std::dec << posneg << ", TimeDelay=" << TimeDelay << std::endl;
 			//
-			SetCfebRxClockDelay(TimeDelay);
 			config.cfeb_rx_clock_delay = TimeDelay;
+			if(print_data)
+				CFEBTiming_ConfigureLevel(config,2);
+			else
+				SetCfebRxClockDelay(TimeDelay);
 
 			// Loop over CFEBs or choose a single CFEB
-			for(int cfeb = (is_cfeb_scan)?(0):(cfeb_num); (is_cfeb_scan)?(cfeb<MaxCFEB):(cfeb==cfeb_num); ++cfeb) {
+			for(int cfeb = (is_cfeb_scan)?(0):(cfeb_num); (is_cfeb_scan)?(cfeb<MaxCFEB):(cfeb==cfeb_num) && !done; ++cfeb) {
 				usleep(50);
 
 				int last_halfstrip = -1;
 
-				for(int ihs = 0; (is_random_halfstrip)?(ihs<MaxHalfStrip):(ihs<1); ++ihs) {
+				for(int ihs = 0; (is_random_halfstrip)?(ihs<MaxHalfStrip):(ihs<1) && !done; ++ihs) {
+
+				if(print_data) {
+					Clear_ODMB_FIFO();
+				}
 
 				thisCCB_->WriteRegister(thisCCB_->L1Reset, 0);
 				thisTMB_->ResetCounters();
@@ -2225,7 +2263,9 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 				std::ostream * temp_os = MyOutput_;
 				MyOutput_ = &out_file;
 
-				CFEBTiming_CheckConfiguration(config);
+				thisCCB_->bc0(); // Start triggering
+
+				bool good_config = CFEBTiming_CheckConfiguration(config);
 
 				if(is_random_halfstrip)
 					CFEBTiming_PulseInject(is_inject_scan, cfeb, layers, pattern, random_ihs_list[ihs]); // Pulse or inject
@@ -2234,6 +2274,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 				MyOutput_ = temp_os;
 
+				out_file << "###UID:" << std::dec << uid << "###" << std::endl;
 				thisTMB_->RedirectOutput(&out_file);
 				thisTMB_->GetCounters();
 				thisTMB_->PrintCounters(14);
@@ -2248,6 +2289,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 				thisTMB_->DecodeCLCT();
 
 				MyOutput_ = &clct_file;
+				(*MyOutput_) << "###UID:" << std::dec << uid << "###" << std::endl;
 				Print_CLCT0();
 				MyOutput_ = web_out;
 
@@ -2278,6 +2320,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 					++pulse_count_cfeb[cfeb];
 					error_file << "----------------" << std::endl;
 					error_file << "!good_clct:";
+					error_file << "###UID:" << std::dec << uid << "###" << std::endl;
 					error_file << " posneg = " << std::setw(1) << std::dec << posneg;
 					error_file << " rx = " << std::setw(2) << std::dec << TimeDelay;
 					error_file << " ihs = " << std::setw(2) << std::dec << ihs;
@@ -2294,6 +2337,16 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 					error_file << std::endl;
 					error_file << "----------------" << std::endl;
 					error_file << std::endl;
+				}
+
+				if(print_data) {
+					if(good_clct)
+						MyOutput_ = &packets_file;
+					else
+						MyOutput_ = &bad_packets_file;
+					(*MyOutput_) << "###UID:" << std::dec << uid << "###" << std::endl;
+					Print_ODMB_FIFO();
+					MyOutput_ = web_out;
 				}
 
 				if(is_random_halfstrip)
@@ -2345,6 +2398,11 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 			  //if(thisTMB_->GetCLCT0keyHalfStrip() != 1)
 
 				//thisTMB_->ResetCounters();
+			  if(!good_config) {
+			  	out_file << "Bad config before: " << "###UID:" << std::dec << uid << "###" << std::endl;
+			  	done = true;
+			  }
+			  ++uid;
 				}
 			}
 			//ihs = (ihs+1) % MaxHalfStrip;

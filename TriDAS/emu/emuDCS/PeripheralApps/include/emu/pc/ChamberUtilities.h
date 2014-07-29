@@ -89,6 +89,7 @@ public:
   void Clear_ODMB_FIFO();
   void Print_ODMB_FIFO();
   void Print_CLCT0();
+  void Print_CFEB_Masks();
   int GetOutputHalfStrip(int tmb_compile_type, int cfeb, int input_halfstrip);
   //void DisableCCBL1A
   void CFEBTiming_DMBDebug(bool print_data = true, bool print_clct = true);

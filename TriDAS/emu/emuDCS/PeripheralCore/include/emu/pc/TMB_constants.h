@@ -333,6 +333,8 @@ static const unsigned long int  hcm601_adr              = 0x000174;
 static const unsigned long int  hcm623_adr              = 0x000176;
 static const unsigned long int  hcm645_adr              = 0x000178;
 
+static const unsigned long int  extend_adr							= 0x00017A; //ADR_V6_EXTEND DCFEB 7-bit extensions to 5 bit fields in 0x42, 0x68
+
 //
 static const int LARGEST_VME_ADDRESS = badbits445_adr;
 static const int OTMB_LARGEST_VME_ADDRESS = hcm645_adr;
@@ -2492,6 +2494,31 @@ const int cfeb_badbits_nbx_vmereg   =  cfeb_badbits_timer_adr;
 const int cfeb_badbits_nbx_bitlo    =  0;
 const int cfeb_badbits_nbx_bithi    =  15;
 const int cfeb_badbits_nbx_default  =  3564;
+//
+//
+//---------------------------------------------------------------------
+// 0X17A = ADR_V6_EXTEND:  DCFEB 7-bit extensions to 5 bit fields in 0x42, 0x68
+//---------------------------------------------------------------------
+const int enableCLCTInputs_extend_vmereg   =  extend_adr;
+const int enableCLCTInputs_extend_bitlo    =  0;
+const int enableCLCTInputs_extend_bithi    =  1;
+const int enableCLCTInputs_extend_default  =  0x3;
+//
+const int cfeb_ram_sel_extend_vmereg       =  extend_adr;
+const int cfeb_ram_sel_extend_bitlo        =  2;
+const int cfeb_ram_sel_extend_bithi        =  3;
+const int cfeb_ram_sel_extend_default      =  0;
+//
+const int cfeb_inj_en_sel_extend_vmereg    =  extend_adr;
+const int cfeb_inj_en_sel_extend_bitlo     =  4;
+const int cfeb_inj_en_sel_extend_bithi     =  5;
+const int cfeb_inj_en_sel_extend_default   =  0x3;
+//
+const int cfebs_enabled_extend_vmereg      =  extend_adr;
+const int cfebs_enabled_extend_bitlo       =  6;
+const int cfebs_enabled_extend_bithi       =  7;
+const int cfebs_enabled_extend_default     =  0x3;
+
 //
 //
 //////////////////////////////////////////////
