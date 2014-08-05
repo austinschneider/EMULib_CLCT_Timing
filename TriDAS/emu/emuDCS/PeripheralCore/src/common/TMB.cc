@@ -2583,6 +2583,13 @@ void TMB::DisableCLCTInputs(){
   sndbuf[0] = (rcvbuf[0]&0xff);
   sndbuf[1] = (rcvbuf[1]&0xe0) ;
   tmb_vme(VME_WRITE,cfeb_inj_adr,sndbuf,rcvbuf,NOW);
+
+  if(hardware_version_ == 2) {
+		tmb_vme(VME_READ,extend_adr,sndbuf,rcvbuf,NOW);
+		sndbuf[0] = (rcvbuf[0]&0xff);
+		sndbuf[1] = (rcvbuf[1]&0xfc) ;
+		tmb_vme(VME_WRITE,extend_adr,sndbuf,rcvbuf,NOW);
+  }
   //
 }
 //

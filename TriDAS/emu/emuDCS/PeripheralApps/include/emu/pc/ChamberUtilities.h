@@ -91,6 +91,9 @@ public:
   void Print_CLCT0();
   void Print_CFEB_Masks();
   int GetOutputHalfStrip(int tmb_compile_type, int cfeb, int input_halfstrip);
+  int GetInputHalfStrip(int tmb_compile_type, int output_halfstrip);
+  int GetInputCFEB(int tmb_compile_type, int output_halfstrip);
+  void halfset(int icrd,int ipln,int ihalf,int chan[][6][16]);
   //void DisableCCBL1A
   void CFEBTiming_DMBDebug(bool print_data = true, bool print_clct = true);
   int * CFEBTiming_L1AWindowScan(bool print_data = true, bool print_clct = true);
@@ -203,19 +206,37 @@ public:
 
   inline bool CFEBTiming_CheckVMECommunicaiton() { // Doesn't work yet
   	bool good = true;
-  	unsigned int dmb_fpga_id = thisDMB_->mbfpgaid();
-  	if(dmb_fpga_id != 0x8424A093) {
-  		good &= false;
-  		(*MyOutput_) << "DMB FPGA ID bad: " << std::hex <<  0x8424A093 << " | " << std::hex << dmb_fpga_id << std::endl;
-  	}
-  	thisCCB_->firmwareVersion();
-  	if(!thisCCB_->CheckFirmwareDate()) {
-  		good &= false;
-  		(*MyOutput_) << "CCB firware version bad" << std::endl;
-  		thisCCB_->RedirectOutput(MyOutput_);
-  		thisCCB_->printFirmwareVersion();
-  		thisCCB_->RedirectOutput(&std::cout);
-  	}
+  	//good &= thisDMB_->CheckVMEFirmwareVersion();
+
+  	unsigned int odmb_firmware_version_expected = 0x306;
+  	unsigned int odmb_fpga_id_expected = 0x8424A093;
+
+
+  	std::cout << "position 0" << std::endl;
+  	unsigned int odmb_firmware_version_read = thisDMB_->odmb_firmware_version();
+  	std::cout << "position 1" << std::endl;
+  	unsigned int odmb_fpga_id_read = thisDMB_->mbfpgaid();
+  	std::cout << "position 2" << std::endl;
+
+  	bool odmb_firmware_version_good = (odmb_firmware_version_expected == odmb_firmware_version_read);
+  	std::cout << "position 3" << std::endl;
+  	bool odmb_fpga_id_good = (odmb_fpga_id_expected == odmb_fpga_id_read);
+  	std::cout << "position 3" << std::endl;
+
+
+  	if(!odmb_firmware_version_good)
+  		(*MyOutput_) << "BAD odmb_firmware_version: expected " << std::hex << odmb_firmware_version_expected << " read " << std::hex << odmb_firmware_version_read << std::endl;
+  	std::cout << "position 4" << std::endl;
+  	if(!odmb_fpga_id_good)
+  		(*MyOutput_) << "BAD odmb_fpga_id: expected " << std::hex << odmb_fpga_id_expected << " read " << std::hex << odmb_fpga_id_read << std::endl;
+  	std::cout << "position 5" << std::endl;
+
+  	good &= odmb_firmware_version_good;
+  	good &= odmb_fpga_id_good;
+  	std::cout << "position 6" << std::endl;
+  	good &= thisCCB_->CheckFirmwareDate();
+  	std::cout << "position 7" << std::endl;
+
   	return good;
   }
 
@@ -730,6 +751,7 @@ private:
   int Npulses_;
   bool comparing_with_clct_;
   int me11_pulsing_;
+  bool is_me11_;
   //
   bool UsePulsing_;
   //
