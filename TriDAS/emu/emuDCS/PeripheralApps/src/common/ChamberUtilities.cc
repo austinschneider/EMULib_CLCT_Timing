@@ -710,40 +710,76 @@ void ChamberUtilities::SetCfebRxClockDelay(int delay) {
 
 int ChamberUtilities::GetOutputHalfStrip(int tmb_compile_type, int cfeb, int input_halfstrip) {
 	int output_hs = -1;
-	if(tmb_compile_type == 0xc) {
+	if(tmb_compile_type == 0xa) {
+		output_hs = cfeb*32 + input_halfstrip;
+	}
+	else if(tmb_compile_type == 0xb) {
+		output_hs = 159 - (32*cfeb + input_halfstrip);
+	}
+	else if(tmb_compile_type == 0xc) {
 		if(cfeb >= 0 && cfeb <= 3)
 			output_hs = 32*cfeb + input_halfstrip;
 		else if(cfeb >= 4 && cfeb <= 6)
-			output_hs = 223 - 32*(cfeb - 4) - input_halfstrip;
+			output_hs = 223 - (32*(cfeb - 4) + input_halfstrip);
+	}
+	else if(tmb_compile_type == 0xd) {
+		if(cfeb >= 0 && cfeb <= 3)
+			output_hs = 127 - (32*cfeb + input_halfstrip);
+		else if(cfeb >= 4 && cfeb <= 6)
+			output_hs = 223 + 32*(cfeb - 4) + input_halfstrip;
 	}
 
 	return output_hs;
 }
 
 int ChamberUtilities::GetInputHalfStrip(int tmb_compile_type, int output_halfstrip) {
-	int cfeb = output_halfstrip / 32;
+	int region = output_halfstrip / 32;
 	int input_hs = output_halfstrip % 32;
 	if(tmb_compile_type == 0xa) {
 
-		}
-		else if(tmb_compile_type == 0xb) {
+	}
+	else if(tmb_compile_type == 0xb) {
+		input_hs = 32 - input_hs;
+	}
+	else if(tmb_compile_type == 0xc) {
+		if(region >= 4) {
 			input_hs = 32 - input_hs;
 		}
-		else if(tmb_compile_type == 0xc) {
-			if(cfeb >= 4) {
-				input_hs = 32 - input_hs;
-			}
+	}
+	else if(tmb_compile_type == 0xd) {
+		if(region < 4) {
+			input_hs = 32 - input_hs;
 		}
-		else if(tmb_compile_type == 0xd) {
-			if(cfeb < 4) {
-				input_hs = 32 - input_hs;
-			}
-		}
-		return input_hs;
+	}
+	return input_hs;
 }
 
 int ChamberUtilities::GetInputCFEB(int tmb_compile_type, int output_halfstrip) {
-	return output_halfstrip / 32;
+	int region = output_halfstrip / 32;
+	int cfeb = -1;
+	if(tmb_compile_type == 0xa) {
+		cfeb = region;
+	}
+	else if(tmb_compile_type == 0xb) {
+		cfeb = 4 - region;
+	}
+	else if(tmb_compile_type == 0xc) {
+		if(region >= 4) {
+			cfeb = 4 + (6 - region);
+		}
+		else {
+			cfeb = region;
+		}
+	}
+	else if(tmb_compile_type == 0xd) {
+		if(region < 4) {
+			cfeb = 3 - region;
+		}
+		else {
+			cfeb = region;
+		}
+	}
+	return cfeb;
 }
 
 void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, unsigned int layer_mask, unsigned int pattern, unsigned int halfstrip, unsigned int n_pulses, unsigned int pulse_delay) {
@@ -788,10 +824,10 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 		usleep(1000);
 	}
 	else {
-		PulseCFEB(test_hs_int,0x1<<cfeb);
-		//LoadCFEB(test_hs_int, 0x1<<cfeb, 0);
+		//PulseCFEB(test_hs_int,0x1<<cfeb);
+		LoadCFEB(test_hs_int, 0x1<<cfeb, 0);
 		//
-		//thisCCB_->inject(1,0x4f);
+		thisCCB_->inject(1,0x4f);
 	}
 	std::cout << "End: " << __PRETTY_FUNCTION__  << std::endl;
 }
@@ -7683,7 +7719,7 @@ void ChamberUtilities::LoadCFEB(int * hs, int CLCTInputs, bool enableL1aEmulator
   if(!is_me11_)
 		for(int layer=0; layer<6; ++layer) {
 			hs_shifted[layer] = hs[layer];
-			if(layer%2 == 0)
+			if((layer%2) == 0)
 				hs_shifted[layer] -= 1;
 		}
   //

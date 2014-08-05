@@ -639,7 +639,7 @@ public:
   void ALCTScanDelays();
   //
   // Get and Set peripheral crate instances:
-  inline void SetTMB(TMB * myTMB)   {thisTMB_ = myTMB; thisALCT_ = myTMB->alctController(); thisRAT_ = myTMB->getRAT();}
+  inline void SetTMB(TMB * myTMB)   {thisTMB_ = myTMB; thisALCT_ = myTMB->alctController(); thisRAT_ = myTMB->getRAT(); is_me11_ = ([](bool b){return b==0xc || b==0xd;})(thisTMB_->GetTMBFirmwareCompileType());}
   inline TMB * GetTMB() { return thisTMB_; }
   //
   inline void SetDMB(DAQMB * myDMB) {thisDMB_ = myDMB; }
