@@ -765,9 +765,9 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 
 	bool is_me11 = true;
 
-	test_hs_int[0] += 1;
-	test_hs_int[2] += 1;
-	test_hs_int[4] += 1;
+	//test_hs_int[0] += 1;
+	//test_hs_int[2] += 1;
+	//test_hs_int[4] += 1;
 
 	//
 	if(is_inject_scan){
