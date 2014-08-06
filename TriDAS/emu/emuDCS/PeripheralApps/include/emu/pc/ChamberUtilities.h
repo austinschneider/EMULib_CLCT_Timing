@@ -126,9 +126,8 @@ public:
 
   	return output_hs;
   }
-  template <size_t HS_per_CFEB>
-  int GetOutputHalfStrip(int cfeb, int input_halfstrip) {
-    return GetOutputXStrip<HS_per_CFEB>(cfeb, input_halfstrip);
+  inline int GetOutputHalfStrip(int cfeb, int input_halfstrip) {
+    return GetOutputXStrip<32>(cfeb, input_halfstrip);
   }
   inline int GetOutputStrip(int cfeb, int input_halfstrip) {
     return GetOutputXStrip<16>(cfeb, input_halfstrip);

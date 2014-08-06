@@ -820,7 +820,7 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 	char test_hs[6]; memset(test_hs, 0, sizeof(test_hs));// hs[0-6] is 1-32 have strips in layers 0-6
 	int test_hs_int[6]; memset(test_hs_int, 0, sizeof(test_hs_int));
 
-	int output_halfstrip = GetOutputHalfStrip<32>(cfeb, halfstrip);
+	int output_halfstrip = GetOutputHalfStrip(cfeb, halfstrip);
 
 	//
 	if(is_inject_scan){
@@ -2404,9 +2404,9 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 				int expected_valid = 0x1;
 				int expected_key_hs = -1;
 				if(is_random_halfstrip)
-					expected_key_hs = GetOutputHalfStrip<32>(cfeb, random_ihs_list[ihs]);
+					expected_key_hs = GetOutputHalfStrip(cfeb, random_ihs_list[ihs]);
 				else
-					expected_key_hs = GetOutputHalfStrip<32>(cfeb, halfstrip);
+					expected_key_hs = GetOutputHalfStrip(cfeb, halfstrip);
 
 				bool good_hits = thisTMB_->GetCLCT0Nhit() == expected_hit;
 				bool good_pattern = thisTMB_->GetCLCT0PatternId() == expected_pattern;
