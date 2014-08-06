@@ -129,11 +129,84 @@ public:
   inline int GetOutputHalfStrip(int cfeb, int input_halfstrip) {
     return GetOutputXStrip<32>(cfeb, input_halfstrip);
   }
-  inline int GetOutputStrip(int cfeb, int input_halfstrip) {
-    return GetOutputXStrip<16>(cfeb, input_halfstrip);
+  inline int GetOutputStrip(int cfeb, int input_strip) {
+    return GetOutputXStrip<16>(cfeb, input_strip);
   }
-  int GetInputHalfStrip(int output_halfstrip);
-  int GetInputCFEB(int output_halfstrip);
+  template <size_t HS_per_CFEB>
+  int GetInputXStrip(int output_halfstrip) {
+  	const int Min_CFEB_in_region_a = 0;
+  	const int Max_CFEB_in_region_a = 3;
+  	const int Min_CFEB_in_region_b = 4;
+  	const int Max_CFEB_in_region_b = 6;
+
+  	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
+  	int region = output_halfstrip / HS_per_CFEB;
+  	int input_hs = output_halfstrip % HS_per_CFEB;
+  	if(tmb_compile_type == 0xa) {
+
+  	}
+  	else if(tmb_compile_type == 0xb) {
+  		input_hs = HS_per_CFEB - input_hs;
+  	}
+  	else if(tmb_compile_type == 0xc) {
+  		if(region >= Min_CFEB_in_region_b && region <= Max_CFEB_in_region_b) {
+  			input_hs = HS_per_CFEB - input_hs;
+  		}
+  	}
+  	else if(tmb_compile_type == 0xd) {
+  		if(region >= Min_CFEB_in_region_a && region <= Max_CFEB_in_region_a) {
+  			input_hs = HS_per_CFEB - input_hs;
+  		}
+  	}
+  	return input_hs;
+  }
+  inline int GetInputHalfStrip(int output_halfstrip) {
+  	return GetInputXStrip<32>(output_halfstrip);
+  }
+  inline int GetInputStrip(int output_strip) {
+		return GetInputXStrip<16>(output_strip);
+	}
+  template <size_t HS_per_CFEB>
+  int GetInputCFEBByX(int output_halfstrip) {
+  	const int Max_CFEB_in_non_me11 = 4;
+  	const int Min_CFEB_in_region_a = 0;
+  	const int Max_CFEB_in_region_a = 3;
+  	const int Min_CFEB_in_region_b = 4;
+  	const int Max_CFEB_in_region_b = 6;
+
+  	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
+  	int region = output_halfstrip / HS_per_CFEB;
+  	int cfeb = -1;
+  	if(tmb_compile_type == 0xa) {
+  		cfeb = region;
+  	}
+  	else if(tmb_compile_type == 0xb) {
+  		cfeb = Max_CFEB_in_non_me11 - region;
+  	}
+  	else if(tmb_compile_type == 0xc) {
+  		if(region >= Min_CFEB_in_region_a && region <= Max_CFEB_in_region_a) {
+  			cfeb = region;
+  		}
+  		else if(region >= Min_CFEB_in_region_b && region <= Max_CFEB_in_region_b) {
+  			cfeb = Min_CFEB_in_region_b + (Max_CFEB_in_region_b - region);
+  		}
+  	}
+  	else if(tmb_compile_type == 0xd) {
+  		if(region >= Min_CFEB_in_region_a && region <= Max_CFEB_in_region_a) {
+  			cfeb = Min_CFEB_in_region_a + (Max_CFEB_in_region_a - region);
+  		}
+  		else if(region >= Min_CFEB_in_region_b && region <= Max_CFEB_in_region_b) {
+  			cfeb = region;
+  		}
+  	}
+  	return cfeb;
+  }
+  int GetInputCFEBByHalfStrip(int output_halfstrip) {
+  	return GetInputCFEBByX<32>(output_halfstrip);
+  }
+  int GetInputCFEBByStrip(int output_strip) {
+		return GetInputCFEBByX<16>(output_strip);
+	}
   void halfset(int icrd,int ipln,int ihalf,int chan[][6][16]);
   //void DisableCCBL1A
   void CFEBTiming_DMBDebug(bool print_data = true, bool print_clct = true);

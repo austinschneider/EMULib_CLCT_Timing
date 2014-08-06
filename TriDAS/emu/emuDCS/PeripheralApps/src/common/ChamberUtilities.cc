@@ -746,71 +746,6 @@ int ChamberUtilities::GetOutputHalfStrip(int cfeb, int input_halfstrip, bool is_
 }
 */
 
-int ChamberUtilities::GetInputHalfStrip(int output_halfstrip) {
-	const int HS_per_CFEB = 32;
-	const int Min_CFEB_in_region_a = 0;
-	const int Max_CFEB_in_region_a = 3;
-	const int Min_CFEB_in_region_b = 4;
-	const int Max_CFEB_in_region_b = 6;
-
-	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
-	int region = output_halfstrip / HS_per_CFEB;
-	int input_hs = output_halfstrip % HS_per_CFEB;
-	if(tmb_compile_type == 0xa) {
-
-	}
-	else if(tmb_compile_type == 0xb) {
-		input_hs = HS_per_CFEB - input_hs;
-	}
-	else if(tmb_compile_type == 0xc) {
-		if(region >= Min_CFEB_in_region_b && region <= Max_CFEB_in_region_b) {
-			input_hs = HS_per_CFEB - input_hs;
-		}
-	}
-	else if(tmb_compile_type == 0xd) {
-		if(region >= Min_CFEB_in_region_a && region <= Max_CFEB_in_region_a) {
-			input_hs = HS_per_CFEB - input_hs;
-		}
-	}
-	return input_hs;
-}
-
-int ChamberUtilities::GetInputCFEB(int output_halfstrip) {
-	const int HS_per_CFEB = 32;
-	const int Max_CFEB_in_non_me11 = 4;
-	const int Min_CFEB_in_region_a = 0;
-	const int Max_CFEB_in_region_a = 3;
-	const int Min_CFEB_in_region_b = 4;
-	const int Max_CFEB_in_region_b = 6;
-
-	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
-	int region = output_halfstrip / HS_per_CFEB;
-	int cfeb = -1;
-	if(tmb_compile_type == 0xa) {
-		cfeb = region;
-	}
-	else if(tmb_compile_type == 0xb) {
-		cfeb = Max_CFEB_in_non_me11 - region;
-	}
-	else if(tmb_compile_type == 0xc) {
-		if(region >= Min_CFEB_in_region_a && region <= Max_CFEB_in_region_a) {
-			cfeb = region;
-		}
-		else if(region >= Min_CFEB_in_region_b && region <= Max_CFEB_in_region_b) {
-			cfeb = Min_CFEB_in_region_b + (Max_CFEB_in_region_b - region);
-		}
-	}
-	else if(tmb_compile_type == 0xd) {
-		if(region >= Min_CFEB_in_region_a && region <= Max_CFEB_in_region_a) {
-			cfeb = Min_CFEB_in_region_a + (Max_CFEB_in_region_a - region);
-		}
-		else if(region >= Min_CFEB_in_region_b && region <= Max_CFEB_in_region_b) {
-			cfeb = region;
-		}
-	}
-	return cfeb;
-}
-
 void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, unsigned int layer_mask, unsigned int pattern, unsigned int halfstrip, unsigned int n_pulses, unsigned int pulse_delay) {
 	std::cout << "Start: " << __PRETTY_FUNCTION__  << std::endl;
 	const int MaxCFEB = 5;
@@ -827,7 +762,7 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 		// Build half strip array (specify a half strip to pulse for each layer)
 		for(int layer=0; layer<6; ++layer){
 			int val = output_halfstrip+CFEBPatterns[pattern-0x2][layer];
-			if(GetInputCFEB(output_halfstrip) == cfeb) {
+			if(GetInputCFEBByHalfStrip(output_halfstrip) == cfeb) {
 				test_hs_int[layer] = GetInputHalfStrip(output_halfstrip) & 0x1f;
 				test_hs[layer] = test_hs_int[layer];
 			}
@@ -7852,8 +7787,8 @@ void ChamberUtilities::PulseHalfstrips(int * hs_normal, bool enableL1aEmulator) 
 	//
 	// For each halfstrip to be pulsed set the voltage in the appropriate capacitors
 	for(int layer = 0; layer < 6; layer++) {
-		CLCTInputs |= 0x1 << GetInputCFEB(hs[layer]);
-		thisDMB_->halfset(GetInputCFEB(hs[layer]), layer,
+		CLCTInputs |= 0x1 << GetInputCFEBByHalfStrip(hs[layer]);
+		thisDMB_->halfset(GetInputCFEBByHalfStrip(hs[layer]), layer,
 				GetInputHalfStrip(hs[layer]), chan);
 	}
 	//
