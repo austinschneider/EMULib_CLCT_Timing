@@ -90,9 +90,44 @@ public:
   void Print_ODMB_FIFO();
   void Print_CLCT0();
   void Print_CFEB_Masks();
-  int GetOutputHalfStrip(int tmb_compile_type, int cfeb, int input_halfstrip);
-  int GetInputHalfStrip(int tmb_compile_type, int output_halfstrip);
-  int GetInputCFEB(int tmb_compile_type, int output_halfstrip);
+  template <size_t HS_per_CFEB>
+  int GetOutputHalfStrip(int cfeb, int input_halfstrip) {
+  	const int N_CFEB_in_non_me11 = 5;
+  	const int Max_HS_in_non_me11 = N_CFEB_in_non_me11*HS_per_CFEB - 1;
+  	const int Min_CFEB_in_region_a = 0;
+  	const int Max_CFEB_in_region_a = 3;
+  	const int Min_HS_in_region_a = Min_CFEB_in_region_a*HS_per_CFEB;
+  	const int Max_HS_in_region_a = Max_CFEB_in_region_a*HS_per_CFEB - 1;
+  	const int Min_CFEB_in_region_b = 4;
+  	const int Max_CFEB_in_region_b = 6;
+  	const int Min_HS_in_region_b = Min_CFEB_in_region_b*HS_per_CFEB;
+  	const int Max_HS_in_region_b = Max_CFEB_in_region_b*HS_per_CFEB - 1;
+
+  	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
+  	int output_hs = -1;
+  	if(tmb_compile_type == 0xa) {
+  		output_hs = HS_per_CFEB*cfeb + input_halfstrip;
+  	}
+  	else if(tmb_compile_type == 0xb) {
+  		output_hs = Max_HS_in_non_me11 - (HS_per_CFEB*cfeb + input_halfstrip);
+  	}
+  	else if(tmb_compile_type == 0xc) {
+  		if(cfeb >= Min_CFEB_in_region_a && cfeb <= Max_CFEB_in_region_a)
+  			output_hs = Min_HS_in_region_a + HS_per_CFEB*cfeb + input_halfstrip;
+  		else if(cfeb >= Min_CFEB_in_region_b && cfeb <= Max_CFEB_in_region_b)
+  			output_hs = Max_HS_in_region_b - (HS_per_CFEB*(cfeb - Min_CFEB_in_region_b) + input_halfstrip);
+  	}
+  	else if(tmb_compile_type == 0xd) {
+  		if(cfeb >= Min_CFEB_in_region_a && cfeb <= Max_CFEB_in_region_a)
+  			output_hs = Max_HS_in_region_a- (HS_per_CFEB*cfeb + input_halfstrip);
+  		else if(cfeb >= Min_CFEB_in_region_b && cfeb <= Max_CFEB_in_region_b)
+  			output_hs = Min_HS_in_region_b + HS_per_CFEB*(cfeb - Min_CFEB_in_region_b) + input_halfstrip;
+  	}
+
+  	return output_hs;
+  }
+  int GetInputHalfStrip(int output_halfstrip);
+  int GetInputCFEB(int output_halfstrip);
   void halfset(int icrd,int ipln,int ihalf,int chan[][6][16]);
   //void DisableCCBL1A
   void CFEBTiming_DMBDebug(bool print_data = true, bool print_clct = true);
@@ -602,6 +637,7 @@ public:
 
   void LoadCFEB(int * hs, int CLCTInputs, bool enableL1aEmulator = 0);
   void PulseCFEB(int * hs, int CLCTInputs, bool enableL1aEmulator = 0);
+  void PulseHalfstrips(int * hs, bool enableL1aEmulator = 0);
   //
   void InjectMPCData() ;
   //

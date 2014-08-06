@@ -707,75 +707,104 @@ void ChamberUtilities::SetCfebRxClockDelay(int delay) {
 	thisTMB_->FirePhaser(phaser_cfeb4_rxd_adr);
 	//usleep(10000);
 }
+/*
+int ChamberUtilities::GetOutputHalfStrip(int cfeb, int input_halfstrip, bool is_halfstrip) {
+	const int HS_per_CFEB = (is_halfstrip)?32:16;
+	const int N_CFEB_in_non_me11 = 5;
+	const int Max_HS_in_non_me11 = N_CFEB_in_non_me11*HS_per_CFEB - 1;
+	const int Min_CFEB_in_region_a = 0;
+	const int Max_CFEB_in_region_a = 3;
+	const int Min_HS_in_region_a = Min_CFEB_in_region_a*HS_per_CFEB;
+	const int Max_HS_in_region_a = Max_CFEB_in_region_a*HS_per_CFEB - 1;
+	const int Min_CFEB_in_region_b = 4;
+	const int Max_CFEB_in_region_b = 6;
+	const int Min_HS_in_region_b = Min_CFEB_in_region_b*HS_per_CFEB;
+	const int Max_HS_in_region_b = Max_CFEB_in_region_b*HS_per_CFEB - 1;
 
-int ChamberUtilities::GetOutputHalfStrip(int tmb_compile_type, int cfeb, int input_halfstrip) {
+	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
 	int output_hs = -1;
 	if(tmb_compile_type == 0xa) {
-		output_hs = cfeb*32 + input_halfstrip;
+		output_hs = HS_per_CFEB*cfeb + input_halfstrip;
 	}
 	else if(tmb_compile_type == 0xb) {
-		output_hs = 159 - (32*cfeb + input_halfstrip);
+		output_hs = Max_HS_in_non_me11 - (HS_per_CFEB*cfeb + input_halfstrip);
 	}
 	else if(tmb_compile_type == 0xc) {
-		if(cfeb >= 0 && cfeb <= 3)
-			output_hs = 32*cfeb + input_halfstrip;
-		else if(cfeb >= 4 && cfeb <= 6)
-			output_hs = 223 - (32*(cfeb - 4) + input_halfstrip);
+		if(cfeb >= Min_CFEB_in_region_a && cfeb <= Max_CFEB_in_region_a)
+			output_hs = Min_HS_in_region_a + HS_per_CFEB*cfeb + input_halfstrip;
+		else if(cfeb >= Min_CFEB_in_region_b && cfeb <= Max_CFEB_in_region_b)
+			output_hs = Max_HS_in_region_b - (HS_per_CFEB*(cfeb - Min_CFEB_in_region_b) + input_halfstrip);
 	}
 	else if(tmb_compile_type == 0xd) {
-		if(cfeb >= 0 && cfeb <= 3)
-			output_hs = 127 - (32*cfeb + input_halfstrip);
-		else if(cfeb >= 4 && cfeb <= 6)
-			output_hs = 223 + 32*(cfeb - 4) + input_halfstrip;
+		if(cfeb >= Min_CFEB_in_region_a && cfeb <= Max_CFEB_in_region_a)
+			output_hs = Max_HS_in_region_a- (HS_per_CFEB*cfeb + input_halfstrip);
+		else if(cfeb >= Min_CFEB_in_region_b && cfeb <= Max_CFEB_in_region_b)
+			output_hs = Min_HS_in_region_b + HS_per_CFEB*(cfeb - Min_CFEB_in_region_b) + input_halfstrip;
 	}
 
 	return output_hs;
 }
+*/
 
-int ChamberUtilities::GetInputHalfStrip(int tmb_compile_type, int output_halfstrip) {
-	int region = output_halfstrip / 32;
-	int input_hs = output_halfstrip % 32;
+int ChamberUtilities::GetInputHalfStrip(int output_halfstrip) {
+	const int HS_per_CFEB = 32;
+	const int Min_CFEB_in_region_a = 0;
+	const int Max_CFEB_in_region_a = 3;
+	const int Min_CFEB_in_region_b = 4;
+	const int Max_CFEB_in_region_b = 6;
+
+	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
+	int region = output_halfstrip / HS_per_CFEB;
+	int input_hs = output_halfstrip % HS_per_CFEB;
 	if(tmb_compile_type == 0xa) {
 
 	}
 	else if(tmb_compile_type == 0xb) {
-		input_hs = 32 - input_hs;
+		input_hs = HS_per_CFEB - input_hs;
 	}
 	else if(tmb_compile_type == 0xc) {
-		if(region >= 4) {
-			input_hs = 32 - input_hs;
+		if(region >= Min_CFEB_in_region_b && region <= Max_CFEB_in_region_b) {
+			input_hs = HS_per_CFEB - input_hs;
 		}
 	}
 	else if(tmb_compile_type == 0xd) {
-		if(region < 4) {
-			input_hs = 32 - input_hs;
+		if(region >= Min_CFEB_in_region_a && region <= Max_CFEB_in_region_a) {
+			input_hs = HS_per_CFEB - input_hs;
 		}
 	}
 	return input_hs;
 }
 
-int ChamberUtilities::GetInputCFEB(int tmb_compile_type, int output_halfstrip) {
-	int region = output_halfstrip / 32;
+int ChamberUtilities::GetInputCFEB(int output_halfstrip) {
+	const int HS_per_CFEB = 32;
+	const int Max_CFEB_in_non_me11 = 4;
+	const int Min_CFEB_in_region_a = 0;
+	const int Max_CFEB_in_region_a = 3;
+	const int Min_CFEB_in_region_b = 4;
+	const int Max_CFEB_in_region_b = 6;
+
+	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
+	int region = output_halfstrip / HS_per_CFEB;
 	int cfeb = -1;
 	if(tmb_compile_type == 0xa) {
 		cfeb = region;
 	}
 	else if(tmb_compile_type == 0xb) {
-		cfeb = 4 - region;
+		cfeb = Max_CFEB_in_non_me11 - region;
 	}
 	else if(tmb_compile_type == 0xc) {
-		if(region >= 4) {
-			cfeb = 4 + (6 - region);
-		}
-		else {
+		if(region >= Min_CFEB_in_region_a && region <= Max_CFEB_in_region_a) {
 			cfeb = region;
+		}
+		else if(region >= Min_CFEB_in_region_b && region <= Max_CFEB_in_region_b) {
+			cfeb = Min_CFEB_in_region_b + (Max_CFEB_in_region_b - region);
 		}
 	}
 	else if(tmb_compile_type == 0xd) {
-		if(region < 4) {
-			cfeb = 3 - region;
+		if(region >= Min_CFEB_in_region_a && region <= Max_CFEB_in_region_a) {
+			cfeb = Min_CFEB_in_region_a + (Max_CFEB_in_region_a - region);
 		}
-		else {
+		else if(region >= Min_CFEB_in_region_b && region <= Max_CFEB_in_region_b) {
 			cfeb = region;
 		}
 	}
@@ -791,22 +820,18 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 	char test_hs[6]; memset(test_hs, 0, sizeof(test_hs));// hs[0-6] is 1-32 have strips in layers 0-6
 	int test_hs_int[6]; memset(test_hs_int, 0, sizeof(test_hs_int));
 
-	// Build half strip array (specify a half strip to pulse for each layer)
-	for(int layer=0; layer<6; ++layer){
-		int val = halfstrip+CFEBPatterns[pattern-0x2][layer];
-		if(val<0 || val>31) continue;
-		test_hs[layer] = val & 0x1f;
-		test_hs_int[layer] = val & 0x1f;
-	}
-
-	bool is_me11 = true;
-
-	//test_hs_int[0] += 1;
-	//test_hs_int[2] += 1;
-	//test_hs_int[4] += 1;
+	int output_halfstrip = GetOutputHalfStrip<32>(cfeb, halfstrip);
 
 	//
 	if(is_inject_scan){
+		// Build half strip array (specify a half strip to pulse for each layer)
+		for(int layer=0; layer<6; ++layer){
+			int val = output_halfstrip+CFEBPatterns[pattern-0x2][layer];
+			if(GetInputCFEB(output_halfstrip) == cfeb) {
+				test_hs_int[layer] = GetInputHalfStrip(output_halfstrip) & 0x1f;
+				test_hs[layer] = test_hs_int[layer];
+			}
+		}
 
 		thisDMB_->Set_TMB_TX_MODE(cfeb, 5); // Set the mode of the CFEB in question
 		usleep(1000);
@@ -824,10 +849,16 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 		usleep(1000);
 	}
 	else {
+		// Build half strip array (specify a half strip to pulse for each layer)
+		for(int layer=0; layer<6; ++layer){
+			int val = output_halfstrip+CFEBPatterns[pattern-0x2][layer];
+			test_hs_int[layer] = val;
+		}
+		PulseHalfstrips(test_hs_int);
 		//PulseCFEB(test_hs_int,0x1<<cfeb);
-		LoadCFEB(test_hs_int, 0x1<<cfeb, 0);
+		//LoadCFEB(test_hs_int, 0x1<<cfeb, 0);
 		//
-		thisCCB_->inject(1,0x4f);
+		//thisCCB_->inject(1,0x4f);
 	}
 	std::cout << "End: " << __PRETTY_FUNCTION__  << std::endl;
 }
@@ -2373,9 +2404,9 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 				int expected_valid = 0x1;
 				int expected_key_hs = -1;
 				if(is_random_halfstrip)
-					expected_key_hs = GetOutputHalfStrip(tmb_compile_type, cfeb, random_ihs_list[ihs]);
+					expected_key_hs = GetOutputHalfStrip<32>(cfeb, random_ihs_list[ihs]);
 				else
-					expected_key_hs = GetOutputHalfStrip(tmb_compile_type, cfeb, halfstrip);
+					expected_key_hs = GetOutputHalfStrip<32>(cfeb, halfstrip);
 
 				bool good_hits = thisTMB_->GetCLCT0Nhit() == expected_hit;
 				bool good_pattern = thisTMB_->GetCLCT0PatternId() == expected_pattern;
@@ -7716,6 +7747,7 @@ void ChamberUtilities::LoadCFEB(int * hs, int CLCTInputs, bool enableL1aEmulator
     }
   }
   //
+  // Shift every other layer by one halfstrip to match software representation of pattern with physical staggering of halfstrips
   if(!is_me11_)
 		for(int layer=0; layer<6; ++layer) {
 			hs_shifted[layer] = hs[layer];
@@ -7723,6 +7755,7 @@ void ChamberUtilities::LoadCFEB(int * hs, int CLCTInputs, bool enableL1aEmulator
 				hs_shifted[layer] -= 1;
 		}
   //
+  // For each halfstrip to be pulsed set the voltage in the appropriate capacitors
   for(int cfeb=0; cfeb<7; cfeb++){
      for(int layer=0; layer<6; layer++){
        if ((CLCTInputs >> cfeb) & 0x1) {
@@ -7734,6 +7767,7 @@ void ChamberUtilities::LoadCFEB(int * hs, int CLCTInputs, bool enableL1aEmulator
      }
   }
   //
+  // Shift the pulsing information to the CFEBs
   thisDMB_->chan2shift(chan);
 	//
 	thisTMB_->EnableCLCTInputs(CLCTInputs);
@@ -7744,87 +7778,6 @@ void ChamberUtilities::LoadCFEB(int * hs, int CLCTInputs, bool enableL1aEmulator
 	//thisCCB_->WriteRegister(0x28,0x7878);  //4Aug05 DM changed 0x789b to 0x7862
 	//
 	return;
-}
-//
-void ChamberUtilities::halfset(int cfeb, int layer, int halfstrip, int chan[7][6][16]) {
-	// cfeb is from 0 to 6
-	// layer is from 0 to 5
-	// halfstrip is from 0 to 31
-
-
-	int ichan, iside;
-
-	// If CFEB numbering is reversed for me11 then reverse hs numbering
-	/*
-	if(hardware_version_ == 2) {
-		if(cfeb >=4 && cfeb <=6) {
-			halfstrip = 32 - halfstrip;
-		}
-	}
-	*/
-
-	// If halfstrip is negative then move the halfstrip to the previous cfeb
-	if(halfstrip < 0) {
-		if(thisTMB_->GetHardwareVersion() == 2) {
-			if(cfeb == 4)
-				return;
-		}
-		else {
-			if(cfeb == 0)
-				return;
-		}
-		halfstrip += 32;
-		cfeb -= 1;
-	}
-	else if(halfstrip >= 32) {
-		if(thisTMB_->GetHardwareVersion() == 2) {
-			if(cfeb == 6) {
-				cfeb = 3;
-				halfstrip = 32 - (halfstrip - 32);
-			}
-			else if(cfeb == 3) {
-				cfeb = 6;
-				halfstrip = 32 - (halfstrip - 32);
-			}
-		}
-		else {
-			halfstrip -= 32;
-			cfeb += 1;
-		}
-	}
-
-
-	//if(ihalf>=0&&ihalf<32){
-	ichan = halfstrip / 2;
-	iside = halfstrip - 2 * ichan;
-	if(iside == 0) {
-		if(ichan >= 1)
-			chan[cfeb][layer][ichan - 1] = MEDIUM_CAP;
-		if(ichan < 1 && cfeb >= 1)
-			chan[cfeb - 1][layer][15] = MEDIUM_CAP;
-		if(ichan >= 0 && ichan <= 15)
-			chan[cfeb][layer][ichan] = LARGE_CAP;
-		if(ichan <= 14)
-			chan[cfeb][layer][ichan + 1] = SMALL_CAP;
-		if(ichan > 14 && cfeb < 6)
-			chan[cfeb + 1][layer][0] = SMALL_CAP;
-	}
-	if(iside == 1) {
-		if(ichan >= 1)
-			chan[cfeb][layer][ichan - 1] = SMALL_CAP;
-		if(ichan < 1 && cfeb >= 1)
-			chan[cfeb - 1][layer][15] = SMALL_CAP;
-		if(ichan >= 0 && ichan <= 15)
-			chan[cfeb][layer][ichan] = LARGE_CAP;
-		if(ichan <= 14)
-			chan[cfeb][layer][ichan + 1] = MEDIUM_CAP;
-		if(ichan > 14 && cfeb < 6)
-			chan[cfeb + 1][layer][0] = MEDIUM_CAP;
-	}
-	//}
-	//else {
-	//printf("Half strip out of range: %d (must be between 0<=hs<=31)\n",ihalf);
-	//}
 }
 //
 void ChamberUtilities::PulseCFEB(int HalfStrip, int CLCTInputs, bool enableL1aEmulator ){
@@ -7860,6 +7813,75 @@ void ChamberUtilities::PulseCFEB(int * HalfStrips, int CLCTInputs, bool enableL1
 		thisDMB_->PrintCounters();
 	}
 	//
+	return;
+}
+//
+void ChamberUtilities::PulseHalfstrips(int * hs_normal, bool enableL1aEmulator = 0) {
+
+	int * hs;
+	int CLCTInputs = 0;
+
+	thisTMB_->DisableCLCTInputs();
+	thisTMB_->SetCLCTPatternTrigger();
+	//
+	thisDMB_->set_comp_thresh(0.1);
+	thisDMB_->set_dac(0.5, 0);
+	//
+	int hs_shifted[6];
+	int chan[7][6][16];
+	// set chan to zero
+	for(int i = 0; i < 7; i++) {
+		for(int j = 0; j < 6; j++) {
+			for(int k = 0; k < 16; k++) {
+				chan[i][j][k] = NORM_RUN;
+			}
+		}
+	}
+	//
+	// Shift every other layer by one halfstrip to match software representation of pattern with physical staggering of halfstrips
+	if(!is_me11_) {
+		for(int layer = 0; layer < 6; ++layer) {
+			hs_shifted[layer] = hs_normal[layer];
+			if((layer % 2) == 0)
+				hs_shifted[layer] -= 1;
+		}
+		hs = hs_shifted;
+	}
+	else
+		hs = hs_normal;
+	//
+	// For each halfstrip to be pulsed set the voltage in the appropriate capacitors
+	for(int layer = 0; layer < 6; layer++) {
+		CLCTInputs |= 0x1 << GetInputCFEB(hs[layer]);
+		thisDMB_->halfset(GetInputCFEB(hs[layer]), layer,
+				GetInputHalfStrip(hs[layer]), chan);
+	}
+	//
+	// Shift the pulsing information to the CFEBs
+	thisDMB_->chan2shift(chan);
+	//
+	thisTMB_->EnableCLCTInputs(CLCTInputs);
+	//
+	// Inject it (pulse the CFEBs)
+	//
+	thisCCB_->setCCBMode(CCB::VMEFPGA);
+	//thisCCB_->WriteRegister(0x28,0x7878);  //4Aug05 DM changed 0x789b to 0x7862
+	//
+	if(thisTMB_->GetHardwareVersion() == 2) {
+		thisCCB_->inject(1,0x4f);
+	}
+	else {
+		thisDMB_->inject(1,0x4f);
+	}
+	//
+	// Decode the TMB CLCTs (0 and 1)
+	//
+	thisTMB_->DecodeCLCT();
+	//
+	if (debug_>10) {
+		thisTMB_->PrintCLCT();
+		thisDMB_->PrintCounters();
+	}
 	return;
 }
 //
