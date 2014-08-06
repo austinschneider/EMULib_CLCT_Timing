@@ -91,7 +91,7 @@ public:
   void Print_CLCT0();
   void Print_CFEB_Masks();
   template <size_t HS_per_CFEB>
-  int GetOutputHalfStrip(int cfeb, int input_halfstrip) {
+  int GetOutputXStrip(int cfeb, int input_halfstrip) {
   	const int N_CFEB_in_non_me11 = 5;
   	const int Max_HS_in_non_me11 = N_CFEB_in_non_me11*HS_per_CFEB - 1;
   	const int Min_CFEB_in_region_a = 0;
@@ -125,6 +125,13 @@ public:
   	}
 
   	return output_hs;
+  }
+  template <size_t HS_per_CFEB>
+  int GetOutputHalfStrip(int cfeb, int input_halfstrip) {
+    return GetOutputXStrip<HS_per_CFEB>(cfeb, input_halfstrip);
+  }
+  inline int GetOutputStrip(int cfeb, int input_halfstrip) {
+    return GetOutputXStrip<16>(cfeb, input_halfstrip);
   }
   int GetInputHalfStrip(int output_halfstrip);
   int GetInputCFEB(int output_halfstrip);
@@ -675,7 +682,12 @@ public:
   void ALCTScanDelays();
   //
   // Get and Set peripheral crate instances:
-  inline void SetTMB(TMB * myTMB)   {thisTMB_ = myTMB; thisALCT_ = myTMB->alctController(); thisRAT_ = myTMB->getRAT(); is_me11_ = ([](bool b){return b==0xc || b==0xd;})(thisTMB_->GetTMBFirmwareCompileType());}
+  inline void SetTMB(TMB * myTMB) {
+      thisTMB_ = myTMB;
+      thisALCT_ = myTMB->alctController();
+      thisRAT_ = myTMB->getRAT();
+      is_me11_ = ([] (bool b) {return b==0xc || b==0xd;})(thisTMB_->GetTMBFirmwareCompileType());
+  }
   inline TMB * GetTMB() { return thisTMB_; }
   //
   inline void SetDMB(DAQMB * myDMB) {thisDMB_ = myDMB; }

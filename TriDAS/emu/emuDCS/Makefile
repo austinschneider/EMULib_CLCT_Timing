@@ -11,13 +11,14 @@ include $(XDAQ_ROOT)/config/mfDefs.$(XDAQ_OS)
 include $(BUILD_HOME)/emu/rpm_version
 
 Project=emu
+CCFlags = -std=c++11
 
 ifeq ($(Set),framework)
 Packages=\
 	emuDCS/PeripheralCore \
 	emuDCS/PeripheralApps \
-        emuDCS/PeripheralXtop \
-        emuDCS/PCSwitches \
+	emuDCS/PeripheralXtop \
+	emuDCS/PCSwitches \
 	emuDCS/OnlineDB \
 	emuDCS/FEDCore \
 	emuDCS/FEDUtils \
@@ -28,13 +29,13 @@ ifeq ($(Set),PeripheralApps)
 Packages= \
 	emuDCS/PeripheralCore \
 	emuDCS/PeripheralApps \
-        emuDCS/PeripheralXtop \
+	emuDCS/PeripheralXtop \
 	emuDCS/OnlineDB
 endif
 
 ifeq ($(Set),FEDCrate)
 Packages= \
-        emuDCS/FEDCore \
+	emuDCS/FEDCore \
 	emuDCS/FEDUtils \
 	emuDCS/FEDApps
 endif

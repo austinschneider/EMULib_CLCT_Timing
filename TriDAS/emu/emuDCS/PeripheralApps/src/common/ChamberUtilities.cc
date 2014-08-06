@@ -7816,7 +7816,7 @@ void ChamberUtilities::PulseCFEB(int * HalfStrips, int CLCTInputs, bool enableL1
 	return;
 }
 //
-void ChamberUtilities::PulseHalfstrips(int * hs_normal, bool enableL1aEmulator = 0) {
+void ChamberUtilities::PulseHalfstrips(int * hs_normal, bool enableL1aEmulator) {
 
 	int * hs;
 	int CLCTInputs = 0;
