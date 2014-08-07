@@ -1538,59 +1538,49 @@ void DAQMB::set_dac(float volt0,float volt1)
 }
 
 //cfeb, layer, hs[layer], chan
-void DAQMB::halfset(int cfeb, int layer, int halfstrip, int chan[7][6][16]) {
+void DAQMB::halfset(int icrd, int ipln, int ihalf, int chan[7][6][16]) {
 
-	if(halfstrip < 0 && cfeb - 1 >= 0) {
-		halfstrip += 32;
-		cfeb -= 1;
-	}
-	else if(halfstrip > 31 && cfeb + 1 <= 6) {
-		halfstrip -= 32;
-		cfeb += 1;
-	}
+	int ichan, iside;
 
-	const int NStrips = 16;
-	const int MaxStrip = NStrips - 1;
-	const int NLayers = 6;
-	const int MaxLayer = NLayers - 1;
+	//(*MyOutput_) << "DAQMB.halfset " << std::endl;
 
-	if(halfstrip < 0 || halfstrip > 31) {
-		(*MyOutput_) << "Halfstrip out of range!" << std::endl;
-		return;
+	if(ihalf < 0 && icrd - 1 >= 0) {
+		ihalf += 32;
+		icrd -= 1;
 	}
 
-	int strip = halfstrip / 2;
-	int side = halfstrip % 2;
-	if(side == 0) {
-		if(strip - 1 >= 0)
-			chan[cfeb][layer][strip - 1] = MEDIUM_CAP;
-		else if(strip - 1 < 0 && cfeb - 1 >= 0)
-			chan[cfeb - 1][layer][MaxStrip] = MEDIUM_CAP;
-
-		if(strip >= 0 && strip <= MaxStrip)
-			chan[cfeb][layer][strip] = LARGE_CAP;
-
-		if(strip + 1 <= MaxStrip)
-			chan[cfeb][layer][strip + 1] = SMALL_CAP;
-		else if(strip + 1 > MaxStrip && cfeb + 1 <= MaxLayer)
-			chan[cfeb + 1][layer][0] = SMALL_CAP;
+	//if(ihalf>=0&&ihalf<32){
+	ichan = ihalf / 2;
+	iside = ihalf - 2 * ichan;
+	if(iside == 0) {
+		if(ichan - 1 >= 0)
+			chan[icrd][ipln][ichan - 1] = MEDIUM_CAP;
+		if(ichan - 1 < 0 && icrd - 1 >= 0)
+			chan[icrd - 1][ipln][15] = MEDIUM_CAP;
+		if(ichan >= 0 && ichan <= 15)
+			chan[icrd][ipln][ichan] = LARGE_CAP;
+		if(ichan + 1 <= 15)
+			chan[icrd][ipln][ichan + 1] = SMALL_CAP;
+		if(ichan + 1 > 15 && icrd + 1 < 7)
+			chan[icrd + 1][ipln][0] = SMALL_CAP;
 	}
-	if(side == 1) {
-		if(strip - 1 >= 0)
-			chan[cfeb][layer][strip - 1] = SMALL_CAP;
-		else if(strip - 1 < 0 && cfeb - 1 >= 0)
-			chan[cfeb - 1][layer][MaxStrip] = SMALL_CAP;
-
-		if(strip >= 0 && strip <= MaxStrip)
-			chan[cfeb][layer][strip] = LARGE_CAP;
-
-		if(strip + 1 <= MaxStrip)
-			chan[cfeb][layer][strip + 1] = MEDIUM_CAP;
-		else if(strip + 1 > MaxStrip && cfeb + 1 <= MaxLayer)
-			chan[cfeb + 1][layer][0] = MEDIUM_CAP;
+	if(iside == 1) {
+		if(ichan - 1 >= 0)
+			chan[icrd][ipln][ichan - 1] = SMALL_CAP;
+		if(ichan - 1 < 0 && icrd - 1 >= 0)
+			chan[icrd - 1][ipln][15] = SMALL_CAP;
+		if(ichan >= 0 && ichan <= 15)
+			chan[icrd][ipln][ichan] = LARGE_CAP;
+		if(ichan + 1 <= 15)
+			chan[icrd][ipln][ichan + 1] = MEDIUM_CAP;
+		if(ichan + 1 > 15 && icrd + 1 < 7)
+			chan[icrd + 1][ipln][0] = MEDIUM_CAP;
 	}
+	//}
+	//else {
+	//printf("Half strip out of range: %d (must be between 0<=hs<=31)\n",ihalf);
+	//}
 }
-
 
 void  DAQMB::halfset(int ifeb,int ipln,int ihalf)
 {

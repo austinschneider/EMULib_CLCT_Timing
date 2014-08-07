@@ -7787,9 +7787,10 @@ void ChamberUtilities::PulseHalfstrips(int * hs_normal, bool enableL1aEmulator) 
 	//
 	// For each halfstrip to be pulsed set the voltage in the appropriate capacitors
 	for(int layer = 0; layer < 6; layer++) {
-		CLCTInputs |= 0x1 << GetInputCFEBByHalfStrip(hs[layer]);
-		thisDMB_->halfset(GetInputCFEBByHalfStrip(hs[layer]), layer,
-				GetInputHalfStrip(hs[layer]), chan);
+		int input_cfeb = GetInputCFEBByHalfStrip(hs[layer]);
+		int input_hs = GetInputHalfStrip(hs[layer]);
+		CLCTInputs |= 0x1 << input_cfeb;
+		halfset(input_cfeb, layer, input_hs, chan);
 	}
 	//
 	// Shift the pulsing information to the CFEBs
@@ -7821,13 +7822,9 @@ void ChamberUtilities::PulseHalfstrips(int * hs_normal, bool enableL1aEmulator) 
 }
 //
 void ChamberUtilities::halfset(int cfeb, int layer, int halfstrip, int chan[7][6][16]) {
-
-	const int NStrips = 16;
-	const int MaxStrip = NStrips - 1;
-	const int NLayers = 6;
-	const int MaxLayer = NLayers - 1;
-	const int chans0[3] = {MEDIUM_CAP, LARGE_CAP, SMALL_CAP};
-	const int chans1[3] = {SMALL_CAP, LARGE_CAP, MEDIUM_CAP};
+	const int caps = 3;
+	const int chans0[caps] = {MEDIUM_CAP, LARGE_CAP, SMALL_CAP};
+	const int chans1[caps] = {SMALL_CAP, LARGE_CAP, MEDIUM_CAP};
 
 	if(halfstrip < 0 || halfstrip > 31) {
 		(*MyOutput_) << "Halfstrip out of range!" << std::endl;
@@ -7839,11 +7836,11 @@ void ChamberUtilities::halfset(int cfeb, int layer, int halfstrip, int chan[7][6
 	int const * chans = (side)?chans1:chans0;
 
 	int output_strip = GetOutputStrip(cfeb,strip);
-	int strips[3] = {output_strip-1, output_strip, output_strip+1};
+	int strips[caps] = {output_strip-1, output_strip, output_strip+1};
 
-	for(int i=0; i<3; ++i) {
+	for(int i=0; i<caps; ++i) {
 		int input_cfeb = GetInputCFEBByStrip(strips[i]);
-		int input_strip = GetInputStrip(output_strip);
+		int input_strip = GetInputStrip(strips[i]);
 		if(input_cfeb >= 0 && input_strip >= 0)
 			chan[input_cfeb][layer][input_strip] = chans[i];
 	}
