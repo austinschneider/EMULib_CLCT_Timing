@@ -7820,6 +7820,35 @@ void ChamberUtilities::PulseHalfstrips(int * hs_normal, bool enableL1aEmulator) 
 	return;
 }
 //
+void ChamberUtilities::halfset(int cfeb, int layer, int halfstrip, int chan[7][6][16]) {
+
+	const int NStrips = 16;
+	const int MaxStrip = NStrips - 1;
+	const int NLayers = 6;
+	const int MaxLayer = NLayers - 1;
+	const int chans0[3] = {MEDIUM_CAP, LARGE_CAP, SMALL_CAP};
+	const int chans1[3] = {SMALL_CAP, LARGE_CAP, MEDIUM_CAP};
+
+	if(halfstrip < 0 || halfstrip > 31) {
+		(*MyOutput_) << "Halfstrip out of range!" << std::endl;
+		return;
+	}
+
+	int strip = halfstrip / 2;
+	int side = halfstrip % 2;
+	int const * chans = (side)?chans1:chans0;
+
+	int output_strip = GetOutputStrip(cfeb,strip);
+	int strips[3] = {output_strip-1, output_strip, output_strip+1};
+
+	for(int i=0; i<3; ++i) {
+		int input_cfeb = GetInputCFEBByStrip(strips[i]);
+		int input_strip = GetInputStrip(output_strip);
+		if(input_cfeb >= 0 && input_strip >= 0)
+			chan[input_cfeb][layer][input_strip] = chans[i];
+	}
+}
+//
 void ChamberUtilities::InjectMPCData(){
 	//
 	float MpcDelay=0;

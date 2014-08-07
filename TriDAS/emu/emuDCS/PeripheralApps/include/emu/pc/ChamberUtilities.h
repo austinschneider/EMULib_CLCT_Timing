@@ -90,41 +90,41 @@ public:
   void Print_ODMB_FIFO();
   void Print_CLCT0();
   void Print_CFEB_Masks();
-  template <size_t HS_per_CFEB>
-  int GetOutputXStrip(int cfeb, int input_halfstrip) {
+  template <size_t XS_per_CFEB>
+  int GetOutputXStrip(int cfeb, int input_xstrip) {
   	const int N_CFEB_in_non_me11 = 5;
-  	const int Max_HS_in_non_me11 = N_CFEB_in_non_me11*HS_per_CFEB - 1;
+  	const int Max_HS_in_non_me11 = N_CFEB_in_non_me11*XS_per_CFEB - 1;
   	const int Min_CFEB_in_region_a = 0;
   	const int Max_CFEB_in_region_a = 3;
-  	const int Min_HS_in_region_a = Min_CFEB_in_region_a*HS_per_CFEB;
-  	const int Max_HS_in_region_a = Max_CFEB_in_region_a*HS_per_CFEB - 1;
+  	const int Min_HS_in_region_a = Min_CFEB_in_region_a*XS_per_CFEB;
+  	const int Max_HS_in_region_a = Max_CFEB_in_region_a*XS_per_CFEB - 1;
   	const int Min_CFEB_in_region_b = 4;
   	const int Max_CFEB_in_region_b = 6;
-  	const int Min_HS_in_region_b = Min_CFEB_in_region_b*HS_per_CFEB;
-  	const int Max_HS_in_region_b = Max_CFEB_in_region_b*HS_per_CFEB - 1;
+  	const int Min_HS_in_region_b = Min_CFEB_in_region_b*XS_per_CFEB;
+  	const int Max_HS_in_region_b = Max_CFEB_in_region_b*XS_per_CFEB - 1;
 
   	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
-  	int output_hs = -1;
+  	int output_xs = -1;
   	if(tmb_compile_type == 0xa) {
-  		output_hs = HS_per_CFEB*cfeb + input_halfstrip;
+  		output_xs = XS_per_CFEB*cfeb + input_xstrip;
   	}
   	else if(tmb_compile_type == 0xb) {
-  		output_hs = Max_HS_in_non_me11 - (HS_per_CFEB*cfeb + input_halfstrip);
+  		output_xs = Max_HS_in_non_me11 - (XS_per_CFEB*cfeb + input_xstrip);
   	}
   	else if(tmb_compile_type == 0xc) {
   		if(cfeb >= Min_CFEB_in_region_a && cfeb <= Max_CFEB_in_region_a)
-  			output_hs = Min_HS_in_region_a + HS_per_CFEB*cfeb + input_halfstrip;
+  			output_xs = Min_HS_in_region_a + XS_per_CFEB*cfeb + input_xstrip;
   		else if(cfeb >= Min_CFEB_in_region_b && cfeb <= Max_CFEB_in_region_b)
-  			output_hs = Max_HS_in_region_b - (HS_per_CFEB*(cfeb - Min_CFEB_in_region_b) + input_halfstrip);
+  			output_xs = Max_HS_in_region_b - (XS_per_CFEB*(cfeb - Min_CFEB_in_region_b) + input_xstrip);
   	}
   	else if(tmb_compile_type == 0xd) {
   		if(cfeb >= Min_CFEB_in_region_a && cfeb <= Max_CFEB_in_region_a)
-  			output_hs = Max_HS_in_region_a- (HS_per_CFEB*cfeb + input_halfstrip);
+  			output_xs = Max_HS_in_region_a - (XS_per_CFEB*cfeb + input_xstrip);
   		else if(cfeb >= Min_CFEB_in_region_b && cfeb <= Max_CFEB_in_region_b)
-  			output_hs = Min_HS_in_region_b + HS_per_CFEB*(cfeb - Min_CFEB_in_region_b) + input_halfstrip;
+  			output_xs = Min_HS_in_region_b + XS_per_CFEB*(cfeb - Min_CFEB_in_region_b) + input_xstrip;
   	}
 
-  	return output_hs;
+  	return output_xs;
   }
   inline int GetOutputHalfStrip(int cfeb, int input_halfstrip) {
     return GetOutputXStrip<32>(cfeb, input_halfstrip);
@@ -132,33 +132,33 @@ public:
   inline int GetOutputStrip(int cfeb, int input_strip) {
     return GetOutputXStrip<16>(cfeb, input_strip);
   }
-  template <size_t HS_per_CFEB>
-  int GetInputXStrip(int output_halfstrip) {
+  template <size_t XS_per_CFEB>
+  int GetInputXStrip(int output_xstrip) {
   	const int Min_CFEB_in_region_a = 0;
   	const int Max_CFEB_in_region_a = 3;
   	const int Min_CFEB_in_region_b = 4;
   	const int Max_CFEB_in_region_b = 6;
 
   	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
-  	int region = output_halfstrip / HS_per_CFEB;
-  	int input_hs = output_halfstrip % HS_per_CFEB;
+  	int region = output_xstrip / XS_per_CFEB;
+  	int input_xs = output_xstrip % XS_per_CFEB;
   	if(tmb_compile_type == 0xa) {
 
   	}
   	else if(tmb_compile_type == 0xb) {
-  		input_hs = HS_per_CFEB - input_hs;
+  		input_xs = XS_per_CFEB - input_xs;
   	}
   	else if(tmb_compile_type == 0xc) {
   		if(region >= Min_CFEB_in_region_b && region <= Max_CFEB_in_region_b) {
-  			input_hs = HS_per_CFEB - input_hs;
+  			input_xs = XS_per_CFEB - input_xs;
   		}
   	}
   	else if(tmb_compile_type == 0xd) {
   		if(region >= Min_CFEB_in_region_a && region <= Max_CFEB_in_region_a) {
-  			input_hs = HS_per_CFEB - input_hs;
+  			input_xs = XS_per_CFEB - input_xs;
   		}
   	}
-  	return input_hs;
+  	return input_xs;
   }
   inline int GetInputHalfStrip(int output_halfstrip) {
   	return GetInputXStrip<32>(output_halfstrip);
@@ -166,8 +166,8 @@ public:
   inline int GetInputStrip(int output_strip) {
 		return GetInputXStrip<16>(output_strip);
 	}
-  template <size_t HS_per_CFEB>
-  int GetInputCFEBByX(int output_halfstrip) {
+  template <size_t XS_per_CFEB>
+  int GetInputCFEBByX(int output_xstrip) {
   	const int Max_CFEB_in_non_me11 = 4;
   	const int Min_CFEB_in_region_a = 0;
   	const int Max_CFEB_in_region_a = 3;
@@ -175,7 +175,7 @@ public:
   	const int Max_CFEB_in_region_b = 6;
 
   	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
-  	int region = output_halfstrip / HS_per_CFEB;
+  	int region = output_xstrip / XS_per_CFEB;
   	int cfeb = -1;
   	if(tmb_compile_type == 0xa) {
   		cfeb = region;
