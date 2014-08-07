@@ -92,6 +92,7 @@ public:
   void Print_CFEB_Masks();
   template <size_t XS_per_CFEB>
   int GetOutputXStrip(int cfeb, int input_xstrip) {
+  	const int Bad_HS = -1;
   	const int Min_CFEB_in_non_me11 = 0;
   	const int Max_CFEB_in_non_me11 = 4;
   	const int N_CFEB_in_non_me11 = Max_CFEB_in_non_me11 - Min_CFEB_in_non_me11 + 1;
@@ -107,26 +108,34 @@ public:
   	const int Max_XS_in_region_b = (Max_CFEB_in_region_b + 1)*XS_per_CFEB - 1;
 
   	int tmb_compile_type = thisTMB_->GetTMBFirmwareCompileType();
-  	int output_xs = -1;
+  	int output_xs = Bad_HS;
   	if(tmb_compile_type == 0xa) {
   		if(cfeb >= Min_CFEB_in_non_me11 && cfeb <= Max_CFEB_in_non_me11)
   			output_xs = Min_XS_in_non_me11 + (XS_per_CFEB*cfeb + input_xstrip);
+  		if(!(output_xs >= Min_XS_in_non_me11 && output_xs <= Max_XS_in_non_me11))
+  			output_xs = Bad_HS;
   	}
   	else if(tmb_compile_type == 0xb) {
   		if(cfeb >= Min_CFEB_in_non_me11 && cfeb <= Max_CFEB_in_non_me11)
   			output_xs = Max_XS_in_non_me11 - (XS_per_CFEB*cfeb + input_xstrip);
+  		if(!(output_xs >= Min_XS_in_non_me11 && output_xs <= Max_XS_in_non_me11))
+				output_xs = Bad_HS;
   	}
   	else if(tmb_compile_type == 0xc) {
   		if(cfeb >= Min_CFEB_in_region_a && cfeb <= Max_CFEB_in_region_a)
   			output_xs = Min_XS_in_region_a + (XS_per_CFEB*(cfeb - Min_CFEB_in_region_a) + input_xstrip);
   		else if(cfeb >= Min_CFEB_in_region_b && cfeb <= Max_CFEB_in_region_b)
   			output_xs = Max_XS_in_region_b - (XS_per_CFEB*(cfeb - Min_CFEB_in_region_b) + input_xstrip);
+  		if(!(output_xs >= Min_XS_in_region_a && output_xs <= Max_XS_in_region_b))
+				output_xs = Bad_HS;
   	}
   	else if(tmb_compile_type == 0xd) {
   		if(cfeb >= Min_CFEB_in_region_a && cfeb <= Max_CFEB_in_region_a)
   			output_xs = Max_XS_in_region_a - (XS_per_CFEB*(cfeb - Min_CFEB_in_region_a) + input_xstrip);
   		else if(cfeb >= Min_CFEB_in_region_b && cfeb <= Max_CFEB_in_region_b)
   			output_xs = Min_XS_in_region_b + (XS_per_CFEB*(cfeb - Min_CFEB_in_region_b) + input_xstrip);
+  		if(!(output_xs >= Min_XS_in_region_a && output_xs <= Max_XS_in_region_b))
+				output_xs = Bad_HS;
   	}
 
   	return output_xs;

@@ -7822,9 +7822,9 @@ void ChamberUtilities::PulseHalfstrips(int * hs_normal, bool enableL1aEmulator) 
 }
 //
 void ChamberUtilities::halfset(int cfeb, int layer, int halfstrip, int chan[7][6][16]) {
-	const int caps = 3;
-	const int chans0[caps] = {MEDIUM_CAP, LARGE_CAP, SMALL_CAP};
-	const int chans1[caps] = {SMALL_CAP, LARGE_CAP, MEDIUM_CAP};
+	const int n_chans = 3;
+	const int chans0[n_chans] = {MEDIUM_CAP, LARGE_CAP, SMALL_CAP};
+	const int chans1[n_chans] = {SMALL_CAP, LARGE_CAP, MEDIUM_CAP};
 
 	if(halfstrip < 0 || halfstrip > 31) {
 		(*MyOutput_) << "Halfstrip out of range!" << std::endl;
@@ -7835,10 +7835,9 @@ void ChamberUtilities::halfset(int cfeb, int layer, int halfstrip, int chan[7][6
 	int side = halfstrip % 2;
 	int const * chans = (side)?chans1:chans0;
 
-	int output_strip = GetOutputStrip(cfeb,strip);
-	int strips[caps] = {output_strip-1, output_strip, output_strip+1};
+	int strips[n_chans] = {GetOutputStrip(cfeb,strip-1), GetOutputStrip(cfeb,strip), GetOutputStrip(cfeb,strip+1)};
 
-	for(int i=0; i<caps; ++i) {
+	for(int i=0; i<n_chans; ++i) {
 		int input_cfeb = GetInputCFEBByStrip(strips[i]);
 		int input_strip = GetInputStrip(strips[i]);
 		if(input_cfeb >= 0 && input_strip >= 0)
