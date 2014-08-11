@@ -601,7 +601,7 @@ public:
   		usleep(1000);
   		thisCCB_->EnableL1aFromDmbCfebCalibX(); // Enable pulsing of the dcfebs
   		usleep(1000);
-  		SetODMBPedestalMode(); // Tell the odmb to always accept data, regardless of timing
+  		//SetODMBPedestalMode(); // Tell the odmb to always accept data, regardless of timing
   		usleep(1000);
   		thisDMB_->set_dac(config.dac, 0); // Set the pulse height
   		usleep(1000);
@@ -787,7 +787,8 @@ public:
       thisTMB_ = myTMB;
       thisALCT_ = myTMB->alctController();
       thisRAT_ = myTMB->getRAT();
-      is_me11_ = ([] (bool b) {return b==0xc || b==0xd;})(thisTMB_->GetTMBFirmwareCompileType());
+      int compile_type = thisTMB_->GetTMBFirmwareCompileType();
+      is_me11_ = (compile_type == 0xc || compile_type == 0xd);
   }
   inline TMB * GetTMB() { return thisTMB_; }
   //

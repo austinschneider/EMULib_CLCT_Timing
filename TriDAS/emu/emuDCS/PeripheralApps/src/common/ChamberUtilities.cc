@@ -754,6 +754,7 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 
 	char test_hs[6]; memset(test_hs, 0, sizeof(test_hs));// hs[0-6] is 1-32 have strips in layers 0-6
 	int test_hs_int[6]; memset(test_hs_int, 0, sizeof(test_hs_int));
+	int test_hs_int_orig[6]; memset(test_hs_int_orig, 0, sizeof(test_hs_int_orig));
 
 	int output_halfstrip = GetOutputHalfStrip(cfeb, halfstrip);
 
@@ -788,12 +789,17 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 		for(int layer=0; layer<6; ++layer){
 			int val = output_halfstrip+CFEBPatterns[pattern-0x2][layer];
 			test_hs_int[layer] = val;
+			test_hs_int_orig[layer] = halfstrip+CFEBPatterns[pattern-0x2][layer];
 		}
-		PulseHalfstrips(test_hs_int);
-		//PulseCFEB(test_hs_int,0x1<<cfeb);
-		//LoadCFEB(test_hs_int, 0x1<<cfeb, 0);
-		//
-		//thisCCB_->inject(1,0x4f);
+		if(true) {
+			PulseHalfstrips(test_hs_int);
+		}
+		else {
+			PulseCFEB(test_hs_int_orig,0x1<<cfeb);
+			//LoadCFEB(test_hs_int_orig, 0x1<<cfeb, 0);
+			//
+			thisCCB_->inject(1,0x4f);
+		}
 	}
 	std::cout << "End: " << __PRETTY_FUNCTION__  << std::endl;
 }
@@ -1488,7 +1494,7 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 
 	const int increment = 1;
 	const int min_l1a_ext_delay = 0;
-	const int max_l1a_ext_delay = 10;
+	const int max_l1a_ext_delay = 4;
 	const int n_l1a_ext_delay = max_l1a_ext_delay-min_l1a_ext_delay+1;
 
 	bool done = false;
@@ -1497,8 +1503,11 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 	int windows[max_windows][4]; memset(windows, 0, sizeof(windows));
 	int n_windows = 0;
 	bool in_window = false;
-
 	int last_pulses = 0;
+
+	bool last_config_state = true;
+	bool config_state = true;
+	int config_state_counter = 0;
 
 	thisTMB_->ReadRegister(seqmod_adr);
 	thisTMB_->PrintTMBRegister(seqmod_adr);
@@ -1523,6 +1532,20 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 			thisTMB_->PrintCounters(44);
 			thisTMB_->PrintCounters(46);
 
+			last_config_state = config_state;
+			config_state = CFEBTiming_CheckConfiguration(config);
+			if(!config_state) {
+				++config_state_counter;
+				if(last_config_state)
+					out_file << "Config state: GOOD -> BAD" << std::endl;
+			}
+			else if(!last_config_state) {
+				out_file << "Config state: BAD -> GOOD" << std::endl;
+				out_file << "\tHad " << config_state_counter << " bad configs." << std::endl;
+				config_state_counter = 0;
+			}
+
+			/*
 			if(!CFEBTiming_CheckConfiguration(config)) {
 				CFEBTiming_ConfigureLevel(config, 2);
 				if(!CFEBTiming_CheckConfiguration(config)) {
@@ -1534,10 +1557,11 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 					}
 				}
 			}
+			*/
 
 			thisCCB_->bc0(); // Start triggering
 
-			if(print_data) {
+			if(print_data && config_state) {
 				Clear_ODMB_FIFO();
 				int n_words = thisDMB_->ReadRegister(0x550C);
 				if(n_words != 0)
@@ -1546,7 +1570,7 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 
 			CFEBTiming_PulseInject(is_inject_scan, cfeb, AllLayers, MaxPattern, halfstrip); // Inject a pattern
 
-			if(print_clct) {
+			if(print_clct && config_state) {
 				thisTMB_->DecodeCLCT();
 				//
 				thisTMB_->RedirectOutput(&clct_file);
@@ -1554,7 +1578,7 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 				thisTMB_->RedirectOutput(&std::cout);
 			}
 
-			if(print_data) {
+			if(print_data && config_state) {
 				//Read back ODMB fifo
 				std::ostream * temp_os = MyOutput_;
 				MyOutput_ = 	&packet_file;
@@ -1571,7 +1595,16 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 			thisTMB_->PrintCounters(44);
 			thisTMB_->PrintCounters(46);
 
-			CFEBTiming_CheckConfiguration(config);
+			if(config_state)
+				CFEBTiming_CheckConfiguration(config);
+
+			if(!config_state) {
+				l1a_delay-=increment;
+				if(config_state_counter >= 1000) {
+					out_file << "ERROR: config_state_counter >= 1000" << std::endl;
+					return NULL;
+				}
+			}
 
 			int pulses = thisTMB_->GetCounter(56);
 			if(pulses > last_pulses) {
@@ -2153,7 +2186,6 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	const bool is_cfeb_scan = cfeb_num < 0;
 	const bool is_random_halfstrip = halfstrip < 0;
 	const bool is_single_pulse = !(is_timing_scan|is_cfeb_scan|is_random_halfstrip);
-	is_me11_ = true;
 
 	thisTMB_->ReadRegister(non_trig_readout_adr);
 	int tmb_compile_type = thisTMB_->GetReadTMBFirmwareCompileType();
@@ -2203,18 +2235,21 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 	CFEBTiming_PrintConfiguration(config);
 
-	if(print_data) {
+	//if(print_data) {
 		CFEBTiming_ConfigureLevel(config);
 		usleep(1000000);
 		CFEBTiming_ConfigureLevel(config);
 		usleep(1000000);
-	}
+		CFEBTiming_CheckConfiguration(config);
+	//}
+	/*
 	else {
 		thisCCB_->setCCBMode(CCB::VMEFPGA);
 		thisCCB_->hardReset();
 		thisCCB_->setCCBMode(CCB::DLOG);
 		ConfigureTMB(config);
 	}
+	*/
 
 	usleep(10000);
 
@@ -2242,7 +2277,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	int pattern_fails[2][MaxTimeDelay][224]; memset(pattern_fails, 0, sizeof(pattern_fails));
 	int hit_fails[2][MaxTimeDelay][224]; memset(hit_fails, 0, sizeof(hit_fails));
 
-	//int ihs = 0;
+	int ihs = 0;
 
 	if(is_random_halfstrip)
 		halfstrip = -1;
@@ -2286,8 +2321,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 				int last_halfstrip = -1;
 
-				for(int ihs = 0; ((is_random_halfstrip)?(ihs<MaxHalfStrip):(ihs<1)) && (!done); ++ihs) {
-
+				//for(int ihs = 0; ((is_random_halfstrip)?(ihs<MaxHalfStrip):(ihs<1)) && (!done); ++ihs) {
 				if(print_data) {
 					Clear_ODMB_FIFO();
 				}
@@ -2303,10 +2337,10 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 				bool good_config = true;
 
-				if(is_inject_scan) {
+				//if(is_inject_scan) {
 					good_config = CFEBTiming_CheckConfiguration(config);
 					//good_config &= CFEBTiming_CheckVMECommunicaiton();
-				}
+				//}
 
 				if(is_random_halfstrip)
 					CFEBTiming_PulseInject(is_inject_scan, cfeb, layers, pattern, random_ihs_list[ihs]); // Pulse or inject
@@ -2446,13 +2480,13 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 					break;
 				}
 			  ++uid;
-				}
+				//}
 				if(done)
 					break;
 			}
 			if(done)
 				break;
-			//ihs = (ihs+1) % MaxHalfStrip;
+			ihs = (ihs+1) % MaxHalfStrip;
 		}  //for (TimeDelay)
 		if(done)
 			break;
