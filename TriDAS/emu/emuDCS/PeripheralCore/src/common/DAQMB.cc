@@ -9526,7 +9526,7 @@ void DAQMB::set_dcfeb_parambuffer(CFEB &cfeb, unsigned short int bufload[34]){
     bufload[1]=comp_thresh&0x0fff;               // comp. thresh. 12 bits
     bufload[2]=comp_mode_cfeb_[number]&0x0003;             // comp. mode 2 bits
     bufload[3]=comp_timing_cfeb_[number]&0x0007;           // comp. timing 3 bits
-    bufload[4]=comp_clk_phase_cfeb_[number]&0x000f;        // comp. CLK phase 4 bits
+    bufload[4]=comp_clk_phase_cfeb_[number]&0x001f;        // comp. CLK phase 5 bits
     bufload[5]=adcsamp_clk_phase_cfeb_[number]&0x0007;     // adc samp. CLK phase 3 bits
     bufload[6]=nsample_cfeb_[number]&0x007f;               // # of samples 7 bits
     bufload[7]=pipeline_depth&0x01ff;         // pipeline depth 9 bits

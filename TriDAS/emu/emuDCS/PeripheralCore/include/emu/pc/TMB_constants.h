@@ -325,6 +325,9 @@ static const unsigned long int  badbits601_adr          = 0x000164;  //ADR_V6_CF
 static const unsigned long int  badbits623_adr          = 0x000166;  //ADR_V6_CFEB6_BADBITS_LY23
 static const unsigned long int  badbits645_adr          = 0x000168;  //ADR_V6_CFEB6_BADBITS_LY45
 
+static const unsigned long int  phaser_cfeb5_rxd_adr    = 0x00016A;
+static const unsigned long int  phaser_cfeb6_rxd_adr    = 0x00016C;
+
 // extra DCFEB Hot Channel Mask on OTMB
 static const unsigned long int  hcm501_adr              = 0x00016E;
 static const unsigned long int  hcm523_adr              = 0x000170;

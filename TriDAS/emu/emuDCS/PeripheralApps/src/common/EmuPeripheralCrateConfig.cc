@@ -4769,6 +4769,7 @@ void EmuPeripheralCrateConfig::ChamberTests(xgi::Input * in, xgi::Output * out )
 		//
 		*out << cgicc::td().set("ALIGN", "left") << "Method" << cgicc::td() << std::endl;
 		*out << cgicc::td().set("ALIGN", "left") << "Time Delay" << cgicc::td() << std::endl;
+		*out << cgicc::td().set("ALIGN", "left") << "CFEB Phase" << cgicc::td() << std::endl;
 		*out << cgicc::td().set("ALIGN", "left") << "CFEB" << cgicc::td() << std::endl;
 		*out << cgicc::td().set("ALIGN", "left") << "Layer Mask" << cgicc::td() << std::endl;
 		*out << cgicc::td().set("ALIGN", "left") << "Pattern Type" << cgicc::td() << std::endl;
@@ -4786,6 +4787,12 @@ void EmuPeripheralCrateConfig::ChamberTests(xgi::Input * in, xgi::Output * out )
 			*out << cgicc::select().set("name", "time_delay") << std::endl;
 				*out << cgicc::option().set("value", toolbox::toString("%d", -1)) << "Scan" << cgicc::option() << std::endl;
 				for(int i=0; i<25; ++i) *out << cgicc::option().set("value", toolbox::toString("%d", i)) << i << cgicc::option() << std::endl;
+			*out << cgicc::select() << std::endl;
+		*out << cgicc::td();
+		*out << cgicc::td().set("ALIGN", "left") << std::endl;
+			*out << cgicc::select().set("name", "cfeb_phase") << std::endl;
+				*out << cgicc::option().set("value", toolbox::toString("%d", -1)) << "Scan" << cgicc::option() << std::endl;
+				for(int i=0; i<32; ++i) *out << cgicc::option().set("value", toolbox::toString("%d", i)) << i << cgicc::option() << std::endl;
 			*out << cgicc::select() << std::endl;
 		*out << cgicc::td();
 		*out << cgicc::td().set("ALIGN", "left") << std::endl;
@@ -5685,6 +5692,7 @@ void EmuPeripheralCrateConfig::CFEBTimingSimpleScan(xgi::Input * in, xgi::Output
 	unsigned int pattern = 1;
 	int halfstrip = 16;
 	bool print_data = false;
+	unsigned cfeb_phase = 0x0;
 
   //
   name = cgi.getElement("is_inject_scan");
@@ -5716,6 +5724,11 @@ void EmuPeripheralCrateConfig::CFEBTimingSimpleScan(xgi::Input * in, xgi::Output
 	if(name != cgi.getElements().end()) {
 		halfstrip = cgi["halfstrip"]->getIntegerValue();
 	}
+	//
+	name = cgi.getElement("cfeb_phase");
+	if(name != cgi.getElements().end()) {
+		cfeb_phase = cgi["cfeb_phase"]->getIntegerValue();
+	}
 
 	print_data = cgi.queryCheckbox("print_data");
 
@@ -5726,9 +5739,10 @@ void EmuPeripheralCrateConfig::CFEBTimingSimpleScan(xgi::Input * in, xgi::Output
 	std::cout << "pattern: " << pattern << std::endl;
 	std::cout << "halfstrip: " << halfstrip << std::endl;
 	std::cout << "print_data: " << print_data << std::endl;
+	std::cout << "cfeb_phase: " << cfeb_phase << std::endl;
 	//
   MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
-  MyTest[tmb][current_crate_].CFEBTiming_with_Posnegs_simple_routine(is_inject_scan, time_delay, cfeb_num, layers, pattern, halfstrip, print_data);
+  MyTest[tmb][current_crate_].CFEBTiming_with_Posnegs_simple_routine(is_inject_scan, time_delay, cfeb_num, layers, pattern, halfstrip, print_data, cfeb_phase);
   MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
   //
   this->ChamberTests(in,out);

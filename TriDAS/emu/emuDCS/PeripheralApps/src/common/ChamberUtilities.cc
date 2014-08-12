@@ -682,6 +682,8 @@ void ChamberUtilities::SetCfebRxPosNeg(int posneg) {
 	thisTMB_->SetCfeb2RxPosNeg(posneg);
 	thisTMB_->SetCfeb3RxPosNeg(posneg);
 	thisTMB_->SetCfeb4RxPosNeg(posneg);
+	thisTMB_->SetCfeb5RxPosNeg(posneg);
+	thisTMB_->SetCfeb6RxPosNeg(posneg);
 	//usleep(10000);
 }
 
@@ -705,6 +707,14 @@ void ChamberUtilities::SetCfebRxClockDelay(int delay) {
 	thisTMB_->SetCfeb4RxClockDelay(delay);
 	thisTMB_->WriteRegister(phaser_cfeb4_rxd_adr);
 	thisTMB_->FirePhaser(phaser_cfeb4_rxd_adr);
+	//
+	thisTMB_->SetCfeb5RxClockDelay(delay);
+	thisTMB_->WriteRegister(phaser_cfeb5_rxd_adr);
+	thisTMB_->FirePhaser(phaser_cfeb5_rxd_adr);
+	//
+	thisTMB_->SetCfeb6RxClockDelay(delay);
+	thisTMB_->WriteRegister(phaser_cfeb6_rxd_adr);
+	thisTMB_->FirePhaser(phaser_cfeb6_rxd_adr);
 	//usleep(10000);
 }
 /*
@@ -1253,13 +1263,13 @@ void ChamberUtilities::CFEBTiming_DMBDebug(bool print_data, bool print_clct) {
 
 	int max_config_level = (print_data)?0:1;
 
-	CFEBTiming_ConfigureLevel(config, max_config_level);
+	CFEBTiming_ConfigureLevel(config, max_config_level,true);
 
 	for(int posneg = 0; posneg<2; ++posneg) {
 	//SetCfebRxPosNeg(posneg); // Set posneg
 
 		config.cfeb_rx_posneg = posneg;
-		CFEBTiming_ConfigureLevel(config, 2);
+		CFEBTiming_ConfigureLevel(config, 3,true);
 
 		for(int rx_delay = 0; rx_delay<MaxTimeDelay; ++rx_delay) {
 
@@ -1267,7 +1277,7 @@ void ChamberUtilities::CFEBTiming_DMBDebug(bool print_data, bool print_clct) {
 
 			//SetCfebRxClockDelay(rx_delay); // Set the Rx clock delay (largely doesn't matter, only 1 bad value)
 			config.cfeb_rx_clock_delay = rx_delay;
-			CFEBTiming_ConfigureLevel(config, 2);
+			CFEBTiming_ConfigureLevel(config, 3,true);
 
 			usleep(1000);
 
@@ -1516,14 +1526,14 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 
 		config.ccb_ext_trig_delay = l1a_ext_delay;
 		usleep(1000);
-		CFEBTiming_ConfigureLevel(config, 2);
+		CFEBTiming_ConfigureLevel(config, 3,true);
 		//thisCCB_->SetExtTrigDelay(l1a_ext_delay); // Set external l1a delay in ccb
 
 		for(int l1a_delay=0; l1a_delay<MaxL1ADelay && (!done); l1a_delay+=increment) {
 			//std::cout << "Start: " << "PulseLoop" << std::endl;
 			//SetTMBL1ADelay(l1a_delay); // Set tmb l1a delay
 			config.tmb_l1a_delay = l1a_delay;
-			CFEBTiming_ConfigureLevel(config, 2);
+			CFEBTiming_ConfigureLevel(config, 3,true);
 			usleep(1000);
 			(*MyOutput_) << "Before" << std::endl;
 
@@ -1652,7 +1662,7 @@ int * ChamberUtilities::CFEBTiming_L1AWindowScan(bool print_data, bool print_clc
 		//thisCCB_->SetExtTrigDelay(e_min); // Set external l1a delay in ccb
 		for(int i = i_min; i<=i_max; ++i) {
 			config.tmb_l1a_delay = i;
-			CFEBTiming_ConfigureLevel(config, 2);
+			CFEBTiming_ConfigureLevel(config, 3, true);
 			//SetTMBL1ADelay(i); // Set tmb l1a delay
 			thisCCB_->bc0(); // Start triggering
 			for(int p = 0; p<n_pulses; ++p) {
@@ -1878,7 +1888,7 @@ void ChamberUtilities::CFEBTiming_LayerMaskScan() {
 
 	for(int layers = 0; layers<=AllLayers; ++layers) {
 
-		CFEBTiming_ConfigureLevel(config, 2);
+		CFEBTiming_ConfigureLevel(config, 3, true);
 
 		std::cout << std::endl;
 		packet_file << " dd" << std::hex << std::setw(2) << std::setfill('0') << layers;
@@ -1889,7 +1899,7 @@ void ChamberUtilities::CFEBTiming_LayerMaskScan() {
 		//for(int i = 0; i<5; ++i)
 		for(int halfstrip = 0; halfstrip<MaxHalfStrip; ++halfstrip) {
 
-			CFEBTiming_ConfigureLevel(config, 2);
+			CFEBTiming_ConfigureLevel(config, 3, true);
 
 			int pattern = MaxPattern;
 			thisCCB_->bc0(); // Start triggering
@@ -2154,7 +2164,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_basic_scan() {
 
 
 }
-void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_scan, int time_delay, int cfeb_num, unsigned int layers, unsigned int pattern, int halfstrip, bool print_data) {
+void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_scan, int time_delay, int cfeb_num, unsigned int layers, unsigned int pattern, int halfstrip, bool print_data, int cfeb_clock_phase) {
 	std::fstream clct_file("/home/cscme11/aschneid/me11/SimpleScan_CLCTs.txt", std::ios_base::out);
 	std::fstream out_file("/home/cscme11/aschneid/me11/SimpleScan_Output.txt", std::ios_base::out);
 	std::fstream error_file("/home/cscme11/aschneid/me11/SimpleScan_ErrorSummary.txt", std::ios_base::out);
@@ -2182,9 +2192,11 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	const int MaxTimeDelay=25;
 	const int MaxHalfStrip = 32;
 	const int MaxLayers = 6;
+	const int MaxCFEBClockPhase = 32;
 	const bool is_timing_scan = time_delay < 0;
 	const bool is_cfeb_scan = cfeb_num < 0;
 	const bool is_random_halfstrip = halfstrip < 0;
+	const bool is_cfeb_clock_phase_scan = cfeb_clock_phase < 0;
 	const bool is_single_pulse = !(is_timing_scan|is_cfeb_scan|is_random_halfstrip);
 
 	thisTMB_->ReadRegister(non_trig_readout_adr);
@@ -2232,6 +2244,11 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	config.tmb_l1a_delay = this->tmb_l1a_delay;
 	config.cfeb_rx_posneg = 0;
 	config.cfeb_rx_clock_delay = 0;
+	config.cfeb_clock_phase = 0;
+	if(is_cfeb_scan)
+		config.cfeb_mask = 0x7f;
+	else
+		config.cfeb_mask = 0x1 << cfeb_num;
 
 	CFEBTiming_PrintConfiguration(config);
 
@@ -2277,6 +2294,8 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	int pattern_fails[2][MaxTimeDelay][224]; memset(pattern_fails, 0, sizeof(pattern_fails));
 	int hit_fails[2][MaxTimeDelay][224]; memset(hit_fails, 0, sizeof(hit_fails));
 
+	int timing_2d_results[2][MaxCFEBClockPhase][MaxTimeDelay]; memset(timing_2d_results, 0, sizeof(timing_2d_results));
+
 	int ihs = 0;
 
 	if(is_random_halfstrip)
@@ -2297,200 +2316,205 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	bool done = false;
 
 	int last_halfstrip[MaxCFEB]; for(int i=0; i<MaxCFEB; ++i) last_halfstrip[i] = -1;
-	for (int posneg=0; (posneg<2) && (!done); posneg++) {
-		// set the same value of posneg for all CFEB's...
-		config.cfeb_rx_posneg = posneg;
-		if(print_data)
-			CFEBTiming_ConfigureLevel(config,2);
-		else
-			SetCfebRxPosNeg(posneg);
-		//
-		for (int TimeDelay = (is_timing_scan)?(0):(time_delay); ((is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay)) && (!done); ++TimeDelay){
-			//
-			//(*MyOutput_) << "Next event:  posneg=" << std::dec << posneg << ", TimeDelay=" << TimeDelay << std::endl;
-			//
-			config.cfeb_rx_clock_delay = TimeDelay;
+	for (int cfeb_phase = (is_cfeb_clock_phase_scan)?(0):(cfeb_clock_phase); ((is_cfeb_clock_phase_scan)?(cfeb_phase<MaxCFEBClockPhase):(cfeb_phase==cfeb_clock_phase)) && (!done); ++cfeb_phase) {
+		config.cfeb_clock_phase = cfeb_phase;
+		CFEBTiming_ConfigureLevel(config, 2, false);
+		for (int posneg=0; (posneg<2) && (!done); posneg++) {
+			// set the same value of posneg for all CFEB's...
+			config.cfeb_rx_posneg = posneg;
 			if(print_data)
-				CFEBTiming_ConfigureLevel(config,2);
+				CFEBTiming_ConfigureLevel(config, 3, true);
 			else
-				SetCfebRxClockDelay(TimeDelay);
-
-			// Loop over CFEBs or choose a single CFEB
-			for(int cfeb = (is_cfeb_scan)?(0):(cfeb_num); ((is_cfeb_scan)?(cfeb<MaxCFEB):(cfeb==cfeb_num)) && (!done); ++cfeb) {
-				usleep(50);
-
-				int last_halfstrip = -1;
-
-				//for(int ihs = 0; ((is_random_halfstrip)?(ihs<MaxHalfStrip):(ihs<1)) && (!done); ++ihs) {
-				if(print_data) {
-					Clear_ODMB_FIFO();
-				}
-
-				thisCCB_->WriteRegister(thisCCB_->L1Reset, 0);
-				thisTMB_->ResetCounters();
-
-				std::ostream * temp_os = MyOutput_;
-				MyOutput_ = &out_file;
-
-				thisCCB_->bc0(); // Start triggering
-
-
-				bool good_config = true;
-
-				//if(is_inject_scan) {
-					good_config = CFEBTiming_CheckConfiguration(config);
-					//good_config &= CFEBTiming_CheckVMECommunicaiton();
-				//}
-
-				if(is_random_halfstrip)
-					CFEBTiming_PulseInject(is_inject_scan, cfeb, layers, pattern, random_ihs_list[ihs]); // Pulse or inject
+				SetCfebRxPosNeg(posneg);
+			//
+			for (int TimeDelay = (is_timing_scan)?(0):(time_delay); ((is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay)) && (!done); ++TimeDelay) {
+				//
+				//(*MyOutput_) << "Next event:  posneg=" << std::dec << posneg << ", TimeDelay=" << TimeDelay << std::endl;
+				//
+				config.cfeb_rx_clock_delay = TimeDelay;
+				if(print_data)
+					CFEBTiming_ConfigureLevel(config, 3, true);
 				else
-					CFEBTiming_PulseInject(is_inject_scan, cfeb, layers, pattern, halfstrip); // Pulse or inject
+					SetCfebRxClockDelay(TimeDelay);
 
-				MyOutput_ = temp_os;
+				// Loop over CFEBs or choose a single CFEB
+				for(int cfeb = (is_cfeb_scan)?(0):(cfeb_num); ((is_cfeb_scan)?(cfeb<MaxCFEB):(cfeb==cfeb_num)) && (!done); ++cfeb) {
+					usleep(50);
 
-				out_file << "###UID:" << std::dec << uid << "###" << std::endl;
-				thisTMB_->RedirectOutput(&out_file);
-				thisTMB_->GetCounters();
-				thisTMB_->PrintCounters(14);
-				thisTMB_->PrintCounters(44);
-				thisTMB_->PrintCounters(46);
-				thisTMB_->RedirectOutput(&std::cout);
-				out_file << std::endl;
-				out_file << std::endl;
+					int last_halfstrip = -1;
 
-				//(*MyOutput_) << "counter: " << counter << std::endl;
+					//for(int ihs = 0; ((is_random_halfstrip)?(ihs<MaxHalfStrip):(ihs<1)) && (!done); ++ihs) {
+					if(print_data) {
+						Clear_ODMB_FIFO();
+					}
 
-				thisTMB_->DecodeCLCT();
+					thisCCB_->WriteRegister(thisCCB_->L1Reset, 0);
+					thisTMB_->ResetCounters();
 
-				MyOutput_ = &clct_file;
-				(*MyOutput_) << "###UID:" << std::dec << uid << "###" << std::endl;
-				Print_CLCT0();
-				MyOutput_ = web_out;
+					std::ostream * temp_os = MyOutput_;
+					MyOutput_ = &out_file;
 
-				int expected_hit = 6;
-				int expected_pattern = pattern;
-				int expected_valid = 0x1;
-				int expected_key_hs = -1;
-				if(is_random_halfstrip)
-					expected_key_hs = GetOutputHalfStrip(cfeb, random_ihs_list[ihs]);
-				else
-					expected_key_hs = GetOutputHalfStrip(cfeb, halfstrip);
+					thisCCB_->bc0(); // Start triggering
 
-				bool good_hits = thisTMB_->GetCLCT0Nhit() == expected_hit;
-				bool good_pattern = thisTMB_->GetCLCT0PatternId() == expected_pattern;
-				bool good_valid = thisTMB_->GetCLCT0Valid() == expected_valid;
-				bool good_hs = thisTMB_->GetCLCT0keyHalfStrip() == expected_key_hs;
-				bool good_clct = good_hits && good_pattern && good_valid && good_hs && good_hits;
 
-				if(thisTMB_->GetCLCT0keyHalfStrip() == last_hs[cfeb]) {
-					std::cout << "Got last halfstrip!" << std::endl;
-				}
+					bool good_config = true;
 
-				last_hs[cfeb] = thisTMB_->GetCLCT0keyHalfStrip();
+					//if(is_inject_scan) {
+						good_config = CFEBTiming_CheckConfiguration(config);
+						//good_config &= CFEBTiming_CheckVMECommunicaiton();
+					//}
 
-				if(!good_clct) {
-					++pulse_count[posneg][TimeDelay][expected_key_hs];
-					++pulse_count_hs_integral[posneg][TimeDelay];
-					++pulse_count_cfeb[cfeb];
-					error_file << "----------------" << std::endl;
-					error_file << "!good_clct:";
-					error_file << "###UID:" << std::dec << uid << "###" << std::endl;
-					error_file << " posneg = " << std::setw(1) << std::dec << posneg;
-					error_file << " rx = " << std::setw(2) << std::dec << TimeDelay;
-					error_file << " ihs = " << std::setw(2) << std::dec << ihs;
-					error_file << std::endl;
-					error_file << "Expected:" << std::endl;
-					error_file << "\thit = " << std::setw(2) << std::dec << expected_hit;
-					error_file << " pat = " << std::setw(1) << std::hex << expected_pattern;
-					error_file << " hs = " << std::setw(1) << std::dec << expected_key_hs;
-					error_file << std::endl;
-					error_file << "Read:" << std::endl;
-					error_file << "\thit = " << std::setw(2) << std::dec << thisTMB_->GetCLCT0Nhit();
-					error_file << " pat = " << std::setw(1) << std::hex << thisTMB_->GetCLCT0PatternId();
-					error_file << " hs = " << std::setw(1) << std::dec << thisTMB_->GetCLCT0keyHalfStrip();
-					error_file << std::endl;
-					error_file << "----------------" << std::endl;
-					error_file << std::endl;
-				}
-
-				if(print_data) {
-					if(good_clct)
-						MyOutput_ = &packets_file;
+					if(is_random_halfstrip)
+						CFEBTiming_PulseInject(is_inject_scan, cfeb, layers, pattern, random_ihs_list[ihs]); // Pulse or inject
 					else
-						MyOutput_ = &bad_packets_file;
+						CFEBTiming_PulseInject(is_inject_scan, cfeb, layers, pattern, halfstrip); // Pulse or inject
+
+					MyOutput_ = temp_os;
+
+					out_file << "###UID:" << std::dec << uid << "###" << std::endl;
+					thisTMB_->RedirectOutput(&out_file);
+					thisTMB_->GetCounters();
+					thisTMB_->PrintCounters(14);
+					thisTMB_->PrintCounters(44);
+					thisTMB_->PrintCounters(46);
+					thisTMB_->RedirectOutput(&std::cout);
+					out_file << std::endl;
+					out_file << std::endl;
+
+					//(*MyOutput_) << "counter: " << counter << std::endl;
+
+					thisTMB_->DecodeCLCT();
+
+					MyOutput_ = &clct_file;
 					(*MyOutput_) << "###UID:" << std::dec << uid << "###" << std::endl;
-					Print_ODMB_FIFO();
+					Print_CLCT0();
 					MyOutput_ = web_out;
+
+					int expected_hit = 6;
+					int expected_pattern = pattern;
+					int expected_valid = 0x1;
+					int expected_key_hs = -1;
+					if(is_random_halfstrip)
+						expected_key_hs = GetOutputHalfStrip(cfeb, random_ihs_list[ihs]);
+					else
+						expected_key_hs = GetOutputHalfStrip(cfeb, halfstrip);
+
+					bool good_hits = thisTMB_->GetCLCT0Nhit() == expected_hit;
+					bool good_pattern = thisTMB_->GetCLCT0PatternId() == expected_pattern;
+					bool good_valid = thisTMB_->GetCLCT0Valid() == expected_valid;
+					bool good_hs = thisTMB_->GetCLCT0keyHalfStrip() == expected_key_hs;
+					bool good_clct = good_hits && good_pattern && good_valid && good_hs && good_hits;
+
+					if(thisTMB_->GetCLCT0keyHalfStrip() == last_hs[cfeb]) {
+						std::cout << "Got last halfstrip!" << std::endl;
+					}
+
+					last_hs[cfeb] = thisTMB_->GetCLCT0keyHalfStrip();
+
+					if(!good_clct) {
+						++pulse_count[posneg][TimeDelay][expected_key_hs];
+						++pulse_count_hs_integral[posneg][TimeDelay];
+						++pulse_count_cfeb[cfeb];
+						++timing_2d_results[posneg][cfeb_phase][TimeDelay];
+						error_file << "----------------" << std::endl;
+						error_file << "!good_clct:";
+						error_file << "###UID:" << std::dec << uid << "###" << std::endl;
+						error_file << " posneg = " << std::setw(1) << std::dec << posneg;
+						error_file << " rx = " << std::setw(2) << std::dec << TimeDelay;
+						error_file << " ihs = " << std::setw(2) << std::dec << ihs;
+						error_file << std::endl;
+						error_file << "Expected:" << std::endl;
+						error_file << "\thit = " << std::setw(2) << std::dec << expected_hit;
+						error_file << " pat = " << std::setw(1) << std::hex << expected_pattern;
+						error_file << " hs = " << std::setw(1) << std::dec << expected_key_hs;
+						error_file << std::endl;
+						error_file << "Read:" << std::endl;
+						error_file << "\thit = " << std::setw(2) << std::dec << thisTMB_->GetCLCT0Nhit();
+						error_file << " pat = " << std::setw(1) << std::hex << thisTMB_->GetCLCT0PatternId();
+						error_file << " hs = " << std::setw(1) << std::dec << thisTMB_->GetCLCT0keyHalfStrip();
+						error_file << std::endl;
+						error_file << "----------------" << std::endl;
+						error_file << std::endl;
+					}
+
+					if(print_data) {
+						if(good_clct)
+							MyOutput_ = &packets_file;
+						else
+							MyOutput_ = &bad_packets_file;
+						(*MyOutput_) << "###UID:" << std::dec << uid << "###" << std::endl;
+						Print_ODMB_FIFO();
+						MyOutput_ = web_out;
+					}
+
+					if(is_random_halfstrip)
+						clct_file << "Random hs: " << std::dec << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  expected_key_hs << std::endl;
+					else
+						clct_file << "Single hs: " << std::dec << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  expected_key_hs << std::endl;
+
+					if(!good_valid)
+						++bad_valid;
+
+					if(!good_hits) {
+						++bad_hits;
+						++hit_fails[posneg][TimeDelay][expected_key_hs];
+						if(!good_hs)
+							++bad_hit_hs;
+					}
+
+					if(!good_pattern) {
+						++bad_pattern;
+						if(!good_hits) {
+							++bad_pattern_hit;
+							if(!good_hs)
+								++bad_pattern_hit_hs;
+						}
+					}
+
+					if(!good_hs) {
+						++bad_hs;
+						if(!good_pattern)
+							++bad_hs_pattern;
+					}
+
+					/*
+					(*MyOutput_) << "pattern: " << pattern << " | " << thisTMB_->GetCLCT0PatternId() << std::endl;
+					if(is_random_halfstrip)
+						(*MyOutput_) << "half_strip: " << random_ihs_list[ihs] << " | " << thisTMB_->GetCLCT0keyHalfStrip() << std::endl;
+					else
+						(*MyOutput_) << "half_strip: " << halfstrip << " | " << thisTMB_->GetCLCT0keyHalfStrip() << std::endl;
+
+					if(thisTMB_->GetCLCT0keyHalfStrip() == last_halfstrip && is_random_halfstrip) {
+						(*MyOutput_) << "BAD: halfstrip matches last_halfstrip" << std::endl;
+					}
+					*/
+
+					last_halfstrip = thisTMB_->GetCLCT0keyHalfStrip();
+
+					//(*MyOutput_) << std::endl;
+
+					//if(thisTMB_->GetCLCT0keyHalfStrip() != 1)
+
+					//thisTMB_->ResetCounters();
+					if(!good_config) {
+						out_file << "Bad config before: " << "###UID:" << std::dec << uid << "###" << std::endl;
+						(*web_out) << "Bad config before: " << "###UID:" << std::dec << uid << "###" << std::endl;
+						done = true;
+						break;
+					}
+					++uid;
+					//}
+					if(done)
+						break;
 				}
-
-				if(is_random_halfstrip)
-					clct_file << "Random hs: " << std::dec << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  expected_key_hs << std::endl;
-				else
-					clct_file << "Single hs: " << std::dec << thisTMB_->GetCLCT0keyHalfStrip() << " | " <<  expected_key_hs << std::endl;
-
-			  if(!good_valid)
-			  	++bad_valid;
-
-			  if(!good_hits) {
-			  	++bad_hits;
-			  	++hit_fails[posneg][TimeDelay][expected_key_hs];
-			  	if(!good_hs)
-			  		++bad_hit_hs;
-			  }
-
-			  if(!good_pattern) {
-			  	++bad_pattern;
-			  	if(!good_hits) {
-			  		++bad_pattern_hit;
-			  		if(!good_hs)
-			  			++bad_pattern_hit_hs;
-			  	}
-			  }
-
-			  if(!good_hs) {
-			  	++bad_hs;
-			  	if(!good_pattern)
-			  		++bad_hs_pattern;
-			  }
-
-			  /*
-			  (*MyOutput_) << "pattern: " << pattern << " | " << thisTMB_->GetCLCT0PatternId() << std::endl;
-			  if(is_random_halfstrip)
-			  	(*MyOutput_) << "half_strip: " << random_ihs_list[ihs] << " | " << thisTMB_->GetCLCT0keyHalfStrip() << std::endl;
-			  else
-			  	(*MyOutput_) << "half_strip: " << halfstrip << " | " << thisTMB_->GetCLCT0keyHalfStrip() << std::endl;
-
-			  if(thisTMB_->GetCLCT0keyHalfStrip() == last_halfstrip && is_random_halfstrip) {
-			  	(*MyOutput_) << "BAD: halfstrip matches last_halfstrip" << std::endl;
-			  }
-			  */
-
-			  last_halfstrip = thisTMB_->GetCLCT0keyHalfStrip();
-
-			  //(*MyOutput_) << std::endl;
-
-			  //if(thisTMB_->GetCLCT0keyHalfStrip() != 1)
-
-				//thisTMB_->ResetCounters();
-				if(!good_config) {
-					out_file << "Bad config before: " << "###UID:" << std::dec << uid << "###" << std::endl;
-					(*web_out) << "Bad config before: " << "###UID:" << std::dec << uid << "###" << std::endl;
-					done = true;
-					break;
-				}
-			  ++uid;
-				//}
 				if(done)
 					break;
-			}
+				ihs = (ihs+1) % MaxHalfStrip;
+			}  //for (TimeDelay)
 			if(done)
 				break;
-			ihs = (ihs+1) % MaxHalfStrip;
-		}  //for (TimeDelay)
-		if(done)
-			break;
-	}//for (posneg)
+		} //for (posneg)
+	} // for (cfeb_phase)
 
 	(*MyOutput_) << std::dec;
 
@@ -2524,6 +2548,25 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 		(*MyOutput_) << std::setw(5) << posneg << std::setw(2) << "|";
 		for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
 			(*MyOutput_) << std::setw(5) << pulse_count_hs_integral[posneg][TimeDelay];
+		}
+		(*MyOutput_) << std::endl;
+	}
+	(*MyOutput_) << "--------------------------------" << std::endl;
+	(*MyOutput_) << std::endl;
+	for(int posneg = 0; posneg<2; ++posneg) {
+		(*MyOutput_) << "PN = " << posneg << std::setw(2) << "------------------------------" << std::endl;
+		(*MyOutput_) << std::setw(5) << "RX    | ";
+		for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
+			(*MyOutput_) << std::setw(5) << TimeDelay;
+		}
+		(*MyOutput_) << std::endl;
+		(*MyOutput_) << "Phase------------------------------" << std::endl;
+		for (int cfeb_phase = (is_cfeb_clock_phase_scan)?(0):(cfeb_clock_phase); ((is_cfeb_clock_phase_scan)?(cfeb_phase<MaxCFEBClockPhase):(cfeb_phase==cfeb_clock_phase)); ++cfeb_phase) {
+			(*MyOutput_) << std::setw(5) << std::dec << cfeb_phase << " | ";
+			for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
+				(*MyOutput_) << std::setw(5) << timing_2d_results[posneg][cfeb_phase][TimeDelay];
+			}
+			(*MyOutput_) << std::endl;
 		}
 		(*MyOutput_) << std::endl;
 	}

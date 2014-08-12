@@ -714,7 +714,7 @@ public:
   int tmb_read_delays(int);
   //
   inline int  GetCfebRxClockDelay(int CFEB) {
-    int tmp[5] = { cfeb0_rx_clock_delay_, cfeb1_rx_clock_delay_, cfeb2_rx_clock_delay_, cfeb3_rx_clock_delay_, cfeb4_rx_clock_delay_ };
+    int tmp[7] = { cfeb0_rx_clock_delay_, cfeb1_rx_clock_delay_, cfeb2_rx_clock_delay_, cfeb3_rx_clock_delay_, cfeb4_rx_clock_delay_ , cfeb5_rx_clock_delay_ , cfeb6_rx_clock_delay_ };
     return tmp[CFEB]; 
   }
   //
@@ -1895,6 +1895,32 @@ public:
   inline void SetCfeb4RxPosNeg(int cfeb4_rx_posneg) { cfeb4_rx_posneg_ = cfeb4_rx_posneg; }
   inline int  GetCfeb4RxPosNeg() { return cfeb4_rx_posneg_; }
   inline int  GetReadCfeb4RxPosNeg() { return read_cfeb4_rx_posneg_; }
+  //
+	//---------------------------------------------------------------------
+	//0X11A = ADR_PHASER7 digital phase shifter setting for cfeb5_rx
+	//---------------------------------------------------------------------
+	inline void SetCfeb5RxClockDelay(int cfeb5_rx_clock_delay) { cfeb5_rx_clock_delay_ = cfeb5_rx_clock_delay; }
+	inline void SetCFEB5delay(int cfeb5_rx_clock_delay)        { cfeb5_rx_clock_delay_ = cfeb5_rx_clock_delay; } //legacy setter
+	inline int  GetCfeb5RxClockDelay() { return cfeb5_rx_clock_delay_; }
+	inline int  GetCFEB5delay()        { return cfeb5_rx_clock_delay_; } //legacy getter
+	inline int  GetReadCfeb5RxClockDelay() { return read_cfeb5_rx_clock_delay_; }
+	//
+	inline void SetCfeb5RxPosNeg(int cfeb5_rx_posneg) { cfeb5_rx_posneg_ = cfeb5_rx_posneg; }
+	inline int  GetCfeb5RxPosNeg() { return cfeb5_rx_posneg_; }
+	inline int  GetReadCfeb5RxPosNeg() { return read_cfeb5_rx_posneg_; }
+	//
+	//---------------------------------------------------------------------
+	//0X11A = ADR_PHASER6 digital phase shifter setting for cfeb6_rx
+	//---------------------------------------------------------------------
+	inline void SetCfeb6RxClockDelay(int cfeb6_rx_clock_delay) { cfeb6_rx_clock_delay_ = cfeb6_rx_clock_delay; }
+	inline void SetCFEB6delay(int cfeb6_rx_clock_delay)        { cfeb6_rx_clock_delay_ = cfeb6_rx_clock_delay; } //legacy setter
+	inline int  GetCfeb6RxClockDelay() { return cfeb6_rx_clock_delay_; }
+	inline int  GetCFEB6delay()        { return cfeb6_rx_clock_delay_; } //legacy getter
+	inline int  GetReadCfeb6RxClockDelay() { return read_cfeb6_rx_clock_delay_; }
+	//
+	inline void SetCfeb6RxPosNeg(int cfeb6_rx_posneg) { cfeb6_rx_posneg_ = cfeb6_rx_posneg; }
+	inline int  GetCfeb6RxPosNeg() { return cfeb6_rx_posneg_; }
+	inline int  GetReadCfeb6RxPosNeg() { return read_cfeb6_rx_posneg_; }
   //
   //---------------------------------------------------------------------
   // 0X11C = ADR_DELAY0_INT:  CFEB to TMB "interstage" delays
@@ -3213,6 +3239,26 @@ private:
   //
   int read_cfeb4_rx_clock_delay_ ;
   int read_cfeb4_rx_posneg_;
+  //
+	//
+	//--------------------------------------------------------------
+	//[0X11A] = ADR_PHASER7:  values in the xml file for cfeb5_rx
+	//--------------------------------------------------------------
+	int cfeb5_rx_clock_delay_ ;
+	int cfeb5_rx_posneg_;
+	//
+	int read_cfeb5_rx_clock_delay_ ;
+	int read_cfeb5_rx_posneg_;
+	//
+	//
+	//--------------------------------------------------------------
+	//[0X11A] = ADR_PHASER8:  values in the xml file for cfeb6_rx
+	//--------------------------------------------------------------
+	int cfeb6_rx_clock_delay_ ;
+	int cfeb6_rx_posneg_;
+	//
+	int read_cfeb6_rx_clock_delay_ ;
+	int read_cfeb6_rx_posneg_;
   //
   //
   //!convert the user value to values which are written to the VME Register

@@ -6436,7 +6436,9 @@ void TMB::DecodeTMBRegister_(unsigned long int address, int data) {
 	      address == phaser_cfeb1_rxd_adr ||
 	      address == phaser_cfeb2_rxd_adr ||
 	      address == phaser_cfeb3_rxd_adr ||
-	      address == phaser_cfeb4_rxd_adr ) {    
+	      address == phaser_cfeb4_rxd_adr ||
+	      address == phaser_cfeb5_rxd_adr ||
+	      address == phaser_cfeb6_rxd_adr ) {
     //---------------------------------------------------------------------
     //(0X10E,0X110,0X112,0X114,0X116,0X118,0X11A) = ADR_PHASER[0-6]:  
     // digital phase shifter for... alct_rx,alct_tx,cfeb[0-4]_rx
@@ -7327,6 +7329,20 @@ void TMB::PrintTMBRegister(unsigned long int address) {
     (*MyOutput_) << " ->CFEB4 to TMB communication clock delay:" << std::endl;
     (*MyOutput_) << "    CFEB4 rx clock delay    = " << std::dec << read_cfeb4_rx_clock_delay_ << std::endl;
     //
+  } else if ( address == phaser_cfeb5_rxd_adr ) {
+		//--------------------------------------------------------------
+		//[0X11A] = ADR_PHASER7:  CFEB5 -> TMB communication clock delay
+		//--------------------------------------------------------------
+		(*MyOutput_) << " ->CFEB5 to TMB communication clock delay:" << std::endl;
+		(*MyOutput_) << "    CFEB5 rx clock delay    = " << std::dec << read_cfeb5_rx_clock_delay_ << std::endl;
+		//
+  } else if ( address == phaser_cfeb6_rxd_adr ) {
+		//--------------------------------------------------------------
+		//[0X11A] = ADR_PHASER8:  CFEB6 -> TMB communication clock delay
+		//--------------------------------------------------------------
+		(*MyOutput_) << " ->CFEB6 to TMB communication clock delay:" << std::endl;
+		(*MyOutput_) << "    CFEB6 rx clock delay    = " << std::dec << read_cfeb6_rx_clock_delay_ << std::endl;
+		//
   } else if ( address == cfeb0_3_interstage_adr ) {
     //--------------------------------------------------------------
     // 0X11C = ADR_DELAY0_INT:  CFEB to TMB "interstage" delays
@@ -7919,6 +7935,18 @@ int TMB::FillTMBRegister(unsigned long int address) {
     //---------------------------------------------------------------------
     data_word = ConvertDigitalPhaseToVMERegisterValues_(cfeb4_rx_clock_delay_,cfeb4_rx_posneg_);
     //
+  } else if ( address == phaser_cfeb5_rxd_adr ) {
+		//---------------------------------------------------------------------
+		//0X11A = ADR_PHASER7: digital phase shifter for cfeb5
+		//---------------------------------------------------------------------
+		data_word = ConvertDigitalPhaseToVMERegisterValues_(cfeb5_rx_clock_delay_,cfeb5_rx_posneg_);
+		//
+  } else if ( address == phaser_cfeb6_rxd_adr ) {
+		//---------------------------------------------------------------------
+		//0X11A = ADR_PHASER8: digital phase shifter for cfeb6
+		//---------------------------------------------------------------------
+		data_word = ConvertDigitalPhaseToVMERegisterValues_(cfeb6_rx_clock_delay_,cfeb6_rx_posneg_);
+		//
   } else if ( address == cfeb0_3_interstage_adr ) {    
     //---------------------------------------------------------------------
     // 0X11C = ADR_DELAY0_INT:  CFEB to TMB "interstage" delays
@@ -8048,6 +8076,16 @@ void TMB::ConvertVMERegisterValuesToDigitalPhases_(unsigned long int vme_address
     //
     read_cfeb4_rx_posneg_      = posneg       ;
     read_cfeb4_rx_clock_delay_ = read_digital_phase;
+    //
+	} else if ( vme_address == phaser_cfeb5_rxd_adr ) {
+    //
+    read_cfeb5_rx_posneg_      = posneg       ;
+    read_cfeb5_rx_clock_delay_ = read_digital_phase;
+    //
+	} else if ( vme_address == phaser_cfeb6_rxd_adr ) {
+    //
+    read_cfeb6_rx_posneg_      = posneg       ;
+    read_cfeb6_rx_clock_delay_ = read_digital_phase;
     //
   }
   //

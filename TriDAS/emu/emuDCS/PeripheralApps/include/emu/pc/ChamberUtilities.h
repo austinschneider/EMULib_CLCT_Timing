@@ -63,7 +63,7 @@ public:
   void CFEBTiming();                           //default is normal_scan
   void CFEBTiming(CFEBTiming_scanType);
   void CFEBTiming_with_Posnegs(CFEBTiming_scanType);
-  void CFEBTiming_with_Posnegs_simple_routine(bool is_new_scan, int time_delay, int cfeb_num, unsigned int layers, unsigned int pattern, int halfstrip, bool print_data = false);
+  void CFEBTiming_with_Posnegs_simple_routine(bool is_new_scan, int time_delay, int cfeb_num, unsigned int layers, unsigned int pattern, int halfstrip, bool print_data, int cfeb_clock_phase);
   void CFEBTiming_with_Posnegs_basic_scan();
   void CFEBTiming_without_Posnegs();
   void CFEBTiming_Configure(int * tof = NULL);
@@ -271,6 +271,10 @@ public:
   	int tmb_l1a_delay;
   	int cfeb_rx_posneg;
   	int cfeb_rx_clock_delay;
+
+  	int cfeb_mask;
+
+  	int cfeb_clock_phase;
   	inline CFEBTiming_Configuration():
 					cfeb_pipeline_depth(0),
 					dac(0),
@@ -290,7 +294,9 @@ public:
 					ccb_ext_trig_delay(0),
 					tmb_l1a_delay(0),
 					cfeb_rx_posneg(0),
-					cfeb_rx_clock_delay(0)
+					cfeb_rx_clock_delay(0),
+					cfeb_clock_phase(0),
+					cfeb_mask(0x7f)
   	{};
   	inline CFEBTiming_Configuration(const CFEBTiming_Configuration & o):
 			cfeb_pipeline_depth(o.cfeb_pipeline_depth),
@@ -311,7 +317,9 @@ public:
 			ccb_ext_trig_delay(o.ccb_ext_trig_delay),
 			tmb_l1a_delay(o.tmb_l1a_delay),
 			cfeb_rx_posneg(o.cfeb_rx_posneg),
-			cfeb_rx_clock_delay(o.cfeb_rx_clock_delay)
+			cfeb_rx_clock_delay(o.cfeb_rx_clock_delay),
+  		cfeb_clock_phase(o.cfeb_clock_phase),
+  		cfeb_mask(o.cfeb_mask)
   	{};
   };
 
@@ -332,6 +340,7 @@ public:
 		(*MyOutput_) << std::setw(23) << "tmb_l1a_delay: " << std::setw(4) << config.tmb_l1a_delay << std::endl;
 		(*MyOutput_) << std::setw(23) << "cfeb_rx_posneg: " << std::setw(4) << config.cfeb_rx_posneg << std::endl;
 		(*MyOutput_) << std::setw(23) << "cfeb_rx_clock_delay: " << std::setw(4) << config.cfeb_rx_clock_delay << std::endl;
+		(*MyOutput_) << std::setw(23) << "cfeb_clock_phase: " << std::setw(4) << config.cfeb_clock_phase << std::endl;
   }
 
   inline bool CFEBTiming_CheckCLCT(int cfeb, unsigned int layer_mask, unsigned int pattern, unsigned int halfstrip) {
@@ -527,11 +536,12 @@ public:
 
   	usleep(1000);
 
-  	int test_cfeb_tof_delay[5] = { thisTMB_->GetCfeb0TOFDelay(),
+  	int test_cfeb_tof_delay[7] = { thisTMB_->GetCfeb0TOFDelay(),
   		thisTMB_->GetCfeb1TOFDelay(),
   		thisTMB_->GetCfeb2TOFDelay(),
   		thisTMB_->GetCfeb3TOFDelay(),
-  		thisTMB_->GetCfeb4TOFDelay() };
+  		thisTMB_->GetCfeb4TOFDelay(),
+  	};
 
   	if(cfeb_tof_delay == NULL)
   		cfeb_tof_delay = test_cfeb_tof_delay;
@@ -582,9 +592,9 @@ public:
   	usleep(1000);
   }
 
-  inline void CFEBTiming_ConfigureLevel(CFEBTiming_Configuration & config, int level = 0) {
+  inline void CFEBTiming_ConfigureLevel(CFEBTiming_Configuration & config, int level = -1, int after = false) {
   	(*MyOutput_) << "CFEBTiming Configure Level " << level << std::endl;
-  	if(level <= 0) {
+  	if(level < 0 | level == 0 | (after & level <= 0)) {
   		thisCCB_->setCCBMode(CCB::VMEFPGA);
 			thisCCB_->hardReset();
 			thisCCB_->setCCBMode(CCB::DLOG);
@@ -611,12 +621,21 @@ public:
   			thisDMB_->settrgsrc(0); // disable DMB's own trigger, LCT
   		usleep(1000);
   	}
-  	if(level <= 1) {
+  	if(level < 0 | level == 1 | (after & level <= 1)) {
 			thisCCB_->setCCBMode(CCB::DLOG);
   		ConfigureTMB(config);
   		usleep(1000);
   	}
-  	if(level <= 2) {
+  	if(level < 0 | level == 2 | (after & level <= 2)) {
+  		for(int cfeb=0; cfeb<thisDMB_->cfebs_.size(); ++cfeb) {
+  			if((config.cfeb_mask & 0x7f) >> thisDMB_->cfebs_[cfeb].number()) {
+  				thisDMB_->SetCompClockPhaseCfeb(thisDMB_->cfebs_[cfeb].number(), config.cfeb_clock_phase);
+  				thisDMB_->dcfeb_configure(thisDMB_->cfebs_[cfeb]);
+  			}
+  			usleep(1000);
+  		}
+  	}
+  	if(level < 0 | level == 3 | (after & level <= 3)) {
   		SetTMBInternalL1A(config.tmb_internal_l1a); // Disable the tmb's internal l1a
   		usleep(1000);
   		if(config.clct_ext_trig_en)
