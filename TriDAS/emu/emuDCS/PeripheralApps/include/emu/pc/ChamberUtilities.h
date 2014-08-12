@@ -90,6 +90,7 @@ public:
   void Print_ODMB_FIFO();
   void Print_CLCT0();
   void Print_CFEB_Masks();
+  std::string CFEBTiming_log_dir_;
   template <size_t XS_per_CFEB>
   int GetOutputXStrip(int cfeb, int input_xstrip) {
   	const int Bad_HS = -1;

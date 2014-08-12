@@ -2165,11 +2165,12 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_basic_scan() {
 
 }
 void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_scan, int time_delay, int cfeb_num, unsigned int layers, unsigned int pattern, int halfstrip, bool print_data, int cfeb_clock_phase) {
-	std::fstream clct_file("/home/cscme11/aschneid/me11/SimpleScan_CLCTs.txt", std::ios_base::out);
-	std::fstream out_file("/home/cscme11/aschneid/me11/SimpleScan_Output.txt", std::ios_base::out);
-	std::fstream error_file("/home/cscme11/aschneid/me11/SimpleScan_ErrorSummary.txt", std::ios_base::out);
-	std::fstream packets_file("/home/cscme11/aschneid/me11/SimpleScan_Packets.txt", std::ios_base::out);
-	std::fstream bad_packets_file("/home/cscme11/aschneid/me11/SimpleScan_BadPackets.txt", std::ios_base::out);
+	CFEBTiming_log_dir_ = "/home/cscme11/aschneid/me11/";
+	std::fstream clct_file((CFEBTiming_log_dir_ + "SimpleScan_CLCTs.txt").c_str(), std::ios_base::out);
+	std::fstream out_file((CFEBTiming_log_dir_ + "SimpleScan_Output.txt").c_str(), std::ios_base::out);
+	std::fstream error_file((CFEBTiming_log_dir_ + "SimpleScan_ErrorSummary.txt").c_str(), std::ios_base::out);
+	std::fstream packets_file((CFEBTiming_log_dir_ + "SimpleScan_Packets.txt").c_str(), std::ios_base::out);
+	std::fstream bad_packets_file((CFEBTiming_log_dir_ + "SimpleScan_BadPackets.txt").c_str(), std::ios_base::out);
 	std::ostream * web_out = MyOutput_;
 	//
 	// This code automatically handles the transition into and out of the
