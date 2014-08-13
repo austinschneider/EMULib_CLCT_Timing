@@ -7888,7 +7888,7 @@ void ChamberUtilities::PulseHalfstrips(int * hs_normal, bool enableL1aEmulator) 
 	thisCCB_->setCCBMode(CCB::VMEFPGA);
 	//thisCCB_->WriteRegister(0x28,0x7878);  //4Aug05 DM changed 0x789b to 0x7862
 	//
-	if(thisTMB_->GetHardwareVersion() == 2) {
+	if(is_me11_) {
 		thisCCB_->inject(1,0x4f);
 	}
 	else {
