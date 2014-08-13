@@ -510,7 +510,7 @@ public:
   	usleep(1000);
 
   	// Set up for this test...
-  	thisTMB_->SetClctPatternTrigEnable(config.clct_pattern_trig_en);
+  	if(is_me11_) thisTMB_->SetClctPatternTrigEnable(config.clct_pattern_trig_en);
   	thisTMB_->SetClctExtTrigEnable(config.clct_ext_trig_en);
   	thisTMB_->WriteRegister(seq_trig_en_adr);
 
@@ -537,11 +537,11 @@ public:
 
   	usleep(1000);
 
-  	int test_cfeb_tof_delay[7] = { thisTMB_->GetCfeb0TOFDelay(),
+  	int test_cfeb_tof_delay[5] = { thisTMB_->GetCfeb0TOFDelay(),
   		thisTMB_->GetCfeb1TOFDelay(),
   		thisTMB_->GetCfeb2TOFDelay(),
   		thisTMB_->GetCfeb3TOFDelay(),
-  		thisTMB_->GetCfeb4TOFDelay(),
+  		thisTMB_->GetCfeb4TOFDelay()
   	};
 
   	if(cfeb_tof_delay == NULL)
@@ -557,12 +557,14 @@ public:
   	thisTMB_->WriteRegister(vme_ddd2_adr); //
   	usleep(1000);
 
-  	// Begin new lines from Stan's code
-  	thisTMB_->SetFifoMode(config.fifo_mode);
-  	thisTMB_->SetFifoTbins(config.fifo_tbins);
-  	thisTMB_->SetFifoPreTrig(config.fifo_pretrig);
-  	thisTMB_->SetFifoNoRawHits(config.fifo_no_hits_raw);
-  	thisTMB_->WriteRegister(emu::pc::seq_fifo_adr);
+  	if(is_me11_) {
+			// Begin new lines from Stan's code
+			thisTMB_->SetFifoMode(config.fifo_mode);
+			thisTMB_->SetFifoTbins(config.fifo_tbins);
+			thisTMB_->SetFifoPreTrig(config.fifo_pretrig);
+			thisTMB_->SetFifoNoRawHits(config.fifo_no_hits_raw);
+			thisTMB_->WriteRegister(emu::pc::seq_fifo_adr);
+  	}
 
   	usleep(1000);
 
@@ -628,27 +630,31 @@ public:
   		usleep(1000);
   	}
   	if(level < 0 | level == 2 | (after & level <= 2)) {
-  		for(int cfeb=0; cfeb<thisDMB_->cfebs_.size(); ++cfeb) {
-  			if((config.cfeb_mask & 0x7f) >> thisDMB_->cfebs_[cfeb].number()) {
-  				thisDMB_->SetCompClockPhaseCfeb(thisDMB_->cfebs_[cfeb].number(), config.cfeb_clock_phase);
-  				thisDMB_->dcfeb_configure(thisDMB_->cfebs_[cfeb]);
-  			}
-  			usleep(1000);
+  		if(is_me11_) {
+				for(int cfeb=0; cfeb<thisDMB_->cfebs_.size(); ++cfeb) {
+					if((config.cfeb_mask & 0x7f) >> thisDMB_->cfebs_[cfeb].number()) {
+						thisDMB_->SetCompClockPhaseCfeb(thisDMB_->cfebs_[cfeb].number(), config.cfeb_clock_phase);
+						thisDMB_->dcfeb_configure(thisDMB_->cfebs_[cfeb]);
+					}
+					usleep(1000);
+				}
   		}
   	}
   	if(level < 0 | level == 3 | (after & level <= 3)) {
-  		SetTMBInternalL1A(config.tmb_internal_l1a); // Disable the tmb's internal l1a
-  		usleep(1000);
-  		if(config.clct_ext_trig_en)
-  			thisTMB_->EnableClctExtTrig(); // Enable l1a trigger from ccb
-  		usleep(1000);
-  		//thisCCB_->SetExtTrigDelay(0); // Set external l1a delay in ccb
-  		thisCCB_->SetExtTrigDelay(config.ccb_ext_trig_delay); // Set external l1a delay in ccb
-  		usleep(1000);
-  		//SetTMBL1ADelay(80); // Set tmb l1a delay
-  		SetTMBL1ADelay(config.tmb_l1a_delay); // Set tmb l1a delay
-  		SetTMBL1ADelay(config.tmb_l1a_delay); // Set tmb l1a delay
-  		usleep(1000);
+  		if(is_me11_) {
+				SetTMBInternalL1A(config.tmb_internal_l1a); // Disable the tmb's internal l1a
+				usleep(1000);
+				if(config.clct_ext_trig_en)
+					thisTMB_->EnableClctExtTrig(); // Enable l1a trigger from ccb
+				usleep(1000);
+				//thisCCB_->SetExtTrigDelay(0); // Set external l1a delay in ccb
+				thisCCB_->SetExtTrigDelay(config.ccb_ext_trig_delay); // Set external l1a delay in ccb
+				usleep(1000);
+				//SetTMBL1ADelay(80); // Set tmb l1a delay
+				SetTMBL1ADelay(config.tmb_l1a_delay); // Set tmb l1a delay
+				SetTMBL1ADelay(config.tmb_l1a_delay); // Set tmb l1a delay
+				usleep(1000);
+  		}
   		SetCfebRxPosNeg(config.cfeb_rx_posneg); // Set posneg
   		usleep(1000);
   		SetCfebRxClockDelay(config.cfeb_rx_clock_delay); // Set the Rx clock delay (largely doesn't matter, only 1 bad value)
