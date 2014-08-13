@@ -708,13 +708,15 @@ void ChamberUtilities::SetCfebRxClockDelay(int delay) {
 	thisTMB_->WriteRegister(phaser_cfeb4_rxd_adr);
 	thisTMB_->FirePhaser(phaser_cfeb4_rxd_adr);
 	//
-	thisTMB_->SetCfeb5RxClockDelay(delay);
-	thisTMB_->WriteRegister(phaser_cfeb5_rxd_adr);
-	thisTMB_->FirePhaser(phaser_cfeb5_rxd_adr);
-	//
-	thisTMB_->SetCfeb6RxClockDelay(delay);
-	thisTMB_->WriteRegister(phaser_cfeb6_rxd_adr);
-	thisTMB_->FirePhaser(phaser_cfeb6_rxd_adr);
+	if(thisTMB_->GetHardwareVersion() == 2) {
+		thisTMB_->SetCfeb5RxClockDelay(delay);
+		thisTMB_->WriteRegister(phaser_cfeb5_rxd_adr);
+		thisTMB_->FirePhaser(phaser_cfeb5_rxd_adr);
+		//
+		thisTMB_->SetCfeb6RxClockDelay(delay);
+		thisTMB_->WriteRegister(phaser_cfeb6_rxd_adr);
+		thisTMB_->FirePhaser(phaser_cfeb6_rxd_adr);
+	}
 	//usleep(10000);
 }
 /*
@@ -2189,7 +2191,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 	// Define test parameters
 	//const int MaxCFEB = thisDMB_->cfebs_.size();
-	const int MaxCFEB = 7;
+	const int MaxCFEB = (is_me11_)?7:5;
 	const int MaxTimeDelay=25;
 	const int MaxHalfStrip = 32;
 	const int MaxLayers = 6;
@@ -2199,6 +2201,11 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	const bool is_random_halfstrip = halfstrip < 0;
 	const bool is_cfeb_clock_phase_scan = cfeb_clock_phase < 0;
 	const bool is_single_pulse = !(is_timing_scan|is_cfeb_scan|is_random_halfstrip);
+
+	if(time_delay >= MaxTimeDelay) return;
+	if(cfeb_num >= MaxCFEB) return;
+	if(halfstrip >= MaxHalfStrip) return;
+	if(cfeb_clock_phase >= MaxCFEBClockPhase) return;
 
 	thisTMB_->ReadRegister(non_trig_readout_adr);
 	int tmb_compile_type = thisTMB_->GetReadTMBFirmwareCompileType();
