@@ -803,7 +803,7 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 			test_hs_int[layer] = val;
 			test_hs_int_orig[layer] = halfstrip+CFEBPatterns[pattern-0x2][layer];
 		}
-		if(false) {
+		if(true) {
 			PulseHalfstrips(test_hs_int);
 		}
 		else {
@@ -7860,8 +7860,8 @@ void ChamberUtilities::PulseHalfstrips(int * hs_normal, bool enableL1aEmulator) 
 	if(!is_me11_) {
 		for(int layer = 0; layer < 6; ++layer) {
 			hs_shifted[layer] = hs_normal[layer];
-			if((layer % 2) == 0)
-				hs_shifted[layer] -= 1;
+			if((layer % 2) == 1)
+				hs_shifted[layer] += 1;
 		}
 		hs = hs_shifted;
 	}
