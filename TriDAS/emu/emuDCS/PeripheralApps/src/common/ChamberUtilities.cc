@@ -2593,11 +2593,13 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 		for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
 			(*MyOutput_) << std::setw(5) << TimeDelay;
 		}
+		(*MyOutput_) << std::endl;
 		for(int cfeb = (is_cfeb_scan)?(0):(cfeb_num); (is_cfeb_scan)?(cfeb<MaxCFEB):(cfeb==cfeb_num); ++cfeb) {
 			(*MyOutput_) << std::setw(5) << std::dec << cfeb << " | ";
 			for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
 				(*MyOutput_) << std::setw(5) << pulse_count_cfeb_rx[cfeb][posneg][TimeDelay];
 			}
+			(*MyOutput_) << std::endl;
 		}
 	}
 
