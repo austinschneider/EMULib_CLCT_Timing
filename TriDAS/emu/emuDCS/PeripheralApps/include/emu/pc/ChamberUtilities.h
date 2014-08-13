@@ -394,12 +394,15 @@ public:
   }
 
   inline void CFEBTiming_ReadConfiguration(CFEBTiming_Configuration & config) {
-  	thisTMB_->ReadRegister(seq_l1a_adr);
-  	config.tmb_internal_l1a = thisTMB_->GetInternalL1a();
+  	if(is_me11_) {
+  		thisTMB_->ReadRegister(seq_l1a_adr);
+  		config.tmb_internal_l1a = thisTMB_->GetInternalL1a();
 
-  	thisTMB_->ReadRegister(seq_trig_en_adr);
-  	config.clct_pattern_trig_en = thisTMB_->GetReadClctPatternTrigEnable();
-  	config.clct_ext_trig_en = thisTMB_->GetReadClctExtTrigEnable();
+			thisTMB_->ReadRegister(seq_trig_en_adr);
+			config.clct_pattern_trig_en = thisTMB_->GetReadClctPatternTrigEnable();
+			config.clct_ext_trig_en = thisTMB_->GetReadClctExtTrigEnable();
+
+  	}
 
   	thisTMB_->ReadRegister(tmb_trig_adr);
   	config.tmb_allow_clct = thisTMB_->GetReadTmbAllowClct();
@@ -421,11 +424,13 @@ public:
     config.fifo_pretrig = thisTMB_->GetReadFifoPreTrig();
     config.fifo_no_hits_raw = thisTMB_->GetReadFifoNoRawHits();
 
-  	unsigned csrb5 = thisCCB_->ReadRegister(CCB::CSRB5);
-  	config.ccb_ext_trig_delay = (csrb5 >> 8) & 0xff;
+    if(is_me11_) {
+			unsigned csrb5 = thisCCB_->ReadRegister(CCB::CSRB5);
+			config.ccb_ext_trig_delay = (csrb5 >> 8) & 0xff;
 
-  	thisTMB_->ReadRegister(seq_l1a_adr);
-  	config.tmb_l1a_delay = thisTMB_->GetL1aDelay();
+			thisTMB_->ReadRegister(seq_l1a_adr);
+			config.tmb_l1a_delay = thisTMB_->GetL1aDelay();
+    }
 
   	thisTMB_->ReadRegister(phaser_cfeb0_rxd_adr); // Get phaser information
   	config.cfeb_rx_posneg = thisTMB_->GetReadCfeb0RxPosNeg();
@@ -438,15 +443,15 @@ public:
   	CFEBTiming_ReadConfiguration(read);
   	//CFEBTiming_PrintConfiguration(read);
   	std::cout << std::dec;
-  	if(read.tmb_internal_l1a != orig.tmb_internal_l1a) {
+  	if(is_me11_ && (read.tmb_internal_l1a != orig.tmb_internal_l1a)) {
   		(*MyOutput_) << std::setw(37) << "BAD tmb_internal_l1a: EXPECTED: " << std::setw(4) << orig.tmb_internal_l1a << " | READ: " << std::setw(4) << read.tmb_internal_l1a << std::endl;
   		same = false;
   	}
-  	if(read.clct_pattern_trig_en != orig.clct_pattern_trig_en) {
+  	if(is_me11_ && (read.clct_pattern_trig_en != orig.clct_pattern_trig_en)) {
   		(*MyOutput_) << std::setw(37) << "BAD clct_pattern_trig_en: EXPECTED: " << std::setw(4) << orig.clct_pattern_trig_en << " | READ: " << std::setw(4) << read.clct_pattern_trig_en << std::endl;
   		same = false;
   	}
-  	if(read.clct_ext_trig_en != orig.clct_ext_trig_en) {
+  	if(is_me11_ && (read.clct_ext_trig_en != orig.clct_ext_trig_en)) {
   		(*MyOutput_) << std::setw(37) << "BAD clct_ext_trig_en: EXPECTED: " << std::setw(4) << orig.clct_ext_trig_en << " | READ: " << std::setw(4) << read.clct_ext_trig_en << std::endl;
   		same = false;
   	}
@@ -486,11 +491,11 @@ public:
       (*MyOutput_) << std::setw(37) << "BAD fifo_no_hits_raw: EXPECTED: " << std::setw(4) << orig.fifo_no_hits_raw << " | READ: " << std::setw(4) << read.fifo_no_hits_raw << std::endl;
       same = false;
   	}
-  	if(read.ccb_ext_trig_delay != orig.ccb_ext_trig_delay) {
+  	if(is_me11_ && (read.ccb_ext_trig_delay != orig.ccb_ext_trig_delay)) {
   		(*MyOutput_) << std::setw(37) << "BAD ccb_ext_trig_delay: EXPECTED: " << std::setw(4) << orig.ccb_ext_trig_delay << " | READ: " << std::setw(4) << read.ccb_ext_trig_delay << std::endl;
   		same = false;
   	}
-  	if(read.tmb_l1a_delay != orig.tmb_l1a_delay) {
+  	if(is_me11_ && (read.tmb_l1a_delay != orig.tmb_l1a_delay)) {
   		(*MyOutput_) << std::setw(37) << "BAD tmb_l1a_delay: EXPECTED: " << std::setw(4) << orig.tmb_l1a_delay << " | READ: " << std::setw(4) << read.tmb_l1a_delay << std::endl;
   		same = false;
   	}
