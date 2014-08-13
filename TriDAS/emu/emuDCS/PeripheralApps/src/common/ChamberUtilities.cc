@@ -2296,6 +2296,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	int pulse_count_hs_integral[2][MaxTimeDelay]; memset(pulse_count_hs_integral, 0, sizeof(pulse_count_hs_integral));
 	int last_hs[MaxCFEB]; for(int i=0; i<MaxCFEB; ++i) last_hs[i] = -1;
 	int pulse_count_cfeb[MaxCFEB]; memset(pulse_count_cfeb, 0, sizeof(pulse_count_cfeb));
+	int pulse_count_cfeb_rx[MaxCFEB][2][MaxTimeDelay]; memset(pulse_count_cfeb_rx, 0, sizeof(pulse_count_cfeb_rx));
 
 	int pattern_fails[2][MaxTimeDelay][224]; memset(pattern_fails, 0, sizeof(pattern_fails));
 	int hit_fails[2][MaxTimeDelay][224]; memset(hit_fails, 0, sizeof(hit_fails));
@@ -2422,6 +2423,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 						++pulse_count_hs_integral[posneg][TimeDelay];
 						++pulse_count_cfeb[cfeb];
 						++timing_2d_results[posneg][cfeb_phase][TimeDelay];
+						++pulse_count_cfeb_rx[cfeb][posneg][TimeDelay];
 						error_file << "----------------" << std::endl;
 						error_file << "!good_clct:";
 						error_file << "###UID:" << std::dec << uid << "###" << std::endl;
@@ -2525,7 +2527,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	(*MyOutput_) << std::dec;
 
 	for(int posneg = 0; posneg<2; ++posneg) {
-		(*MyOutput_) << "Posneg: " << posneg << std::endl;;
+		(*MyOutput_) << "Posneg: " << posneg << std::endl;
 		(*MyOutput_) << std::setw(5) << "RX" << std::setw(2) << "|";
 		for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
 			(*MyOutput_) << std::setw(5) << TimeDelay;
@@ -2583,6 +2585,21 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 		(*MyOutput_) << "CFEB " << cfeb << ": " << pulse_count_cfeb[cfeb] << std::endl;
 	}
 	(*MyOutput_) << std::endl;
+
+	(*MyOutput_) << "CFEB Rx Windows: " << std::endl;
+	for(int posneg = 0; posneg<2; ++posneg) {
+		(*MyOutput_) << "Posneg: " << posneg << std::endl;
+		(*MyOutput_) << std::setw(5) << "RX" << std::setw(2) << "|";
+		for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
+			(*MyOutput_) << std::setw(5) << TimeDelay;
+		}
+		for(int cfeb = (is_cfeb_scan)?(0):(cfeb_num); (is_cfeb_scan)?(cfeb<MaxCFEB):(cfeb==cfeb_num); ++cfeb) {
+			(*MyOutput_) << std::setw(5) << std::dec << cfeb << " | ";
+			for (int TimeDelay = (is_timing_scan)?(0):(time_delay); (is_timing_scan)?(TimeDelay<MaxTimeDelay):(TimeDelay==time_delay); ++TimeDelay) {
+				(*MyOutput_) << std::setw(5) << pulse_count_cfeb_rx[cfeb][posneg][TimeDelay];
+			}
+		}
+	}
 
 	(*MyOutput_) << "bad_valid: " << bad_valid << std::endl;
 	(*MyOutput_) << "bad_hits: " << bad_hits << std::endl;
