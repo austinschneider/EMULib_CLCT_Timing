@@ -803,14 +803,14 @@ void ChamberUtilities::CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, uns
 			test_hs_int[layer] = val;
 			test_hs_int_orig[layer] = halfstrip+CFEBPatterns[pattern-0x2][layer];
 		}
-		if(true) {
+		if(false) {
 			PulseHalfstrips(test_hs_int);
 		}
 		else {
 			PulseCFEB(test_hs_int_orig,0x1<<cfeb);
 			//LoadCFEB(test_hs_int_orig, 0x1<<cfeb, 0);
 			//
-			thisCCB_->inject(1,0x4f);
+			//thisCCB_->inject(1,0x4f);
 		}
 	}
 	std::cout << "End: " << __PRETTY_FUNCTION__  << std::endl;
