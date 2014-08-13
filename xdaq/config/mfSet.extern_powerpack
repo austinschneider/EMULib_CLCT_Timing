@@ -1,0 +1,26 @@
+# $Id: mfSet.extern_powerpack,v 1.3 2008/07/18 15:26:30 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+ifeq ($(XDAQ_OS),macosx)
+Packages=\
+	extern/pstreams \
+        extern/sqlite
+
+else
+Packages=\
+	extern/slp \
+	extern/appweb \
+	extern/pstreams \
+	extern/ssh \
+        extern/sqlite
+
+endif

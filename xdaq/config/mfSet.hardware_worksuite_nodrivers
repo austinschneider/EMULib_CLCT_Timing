@@ -1,0 +1,46 @@
+# $Id: mfSet.hardware_worksuite,v 1.5 2008/07/18 15:26:30 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+
+Packages=\
+	extern/caen/caenvmelib \
+	extern/caen/caenbridgeupgrade \
+	xpci \
+	hal/generic \
+	hal/utilities \
+	hal/busAdapter/dummy \
+	hal/busAdapter/caen \
+	hal/busAdapter/pci \
+	pheaps \
+	jal/jtagChain \
+	jal/jtagController \
+	jal/jtagSVFSequencer \
+	tts/ttsbase \
+	tts/ipcutils \
+	tts/cpcibase \
+	tts/fmmtd \
+	tts/fmm \
+	tts/fmmcontroller \
+	tts/atts \
+	tts/fmmdbi \
+	tts/fmmtester \
+	d2s/fedemulator \
+	d2s/gtpe \
+	d2s/gtpecontroller \
+	d2s/firmwareloader \
+	fedbuilder \
+	fedbuilder/tools \
+	fedbuilder/infospacesender \
+	fedbuilder/infospacebrowser \
+	fedbuilder/fbo \
+	fedbuilder/frlcontroller
+

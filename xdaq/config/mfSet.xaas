@@ -1,0 +1,120 @@
+# $Id$
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: L. B. Orsini and A. Petrucci                                 #
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+Packages=\
+	xaas/slim/minidaq/zone \
+	xaas/slim/minidaq/client \
+	xaas/slim/minidaq/service \
+	xaas/slim/minidaq/settings \
+	xaas/slim/minidaq/extension \
+        xaas/slim/hilton/zone \
+        xaas/slim/hilton/client \
+        xaas/slim/hilton/service \
+        xaas/slim/hilton/settings \
+        xaas/slim/hilton/extension \
+        xaas/slim/dqm/zone \
+        xaas/slim/dqm/client \
+        xaas/slim/dqm/service \
+        xaas/slim/dqm/settings \
+        xaas/slim/dqm/extension \
+	xaas/slim/lab40/zone \
+	xaas/slim/lab40/client \
+	xaas/slim/lab40/service \
+	xaas/slim/lab40/settings \
+	xaas/wide/cdaq/zone \
+	xaas/wide/cdaq/client \
+	xaas/wide/cdaq/service \
+	xaas/wide/cdaq/settings \
+	xaas/wide/daqval/zone \
+	xaas/wide/daqval/client \
+	xaas/wide/daqval/service \
+	xaas/wide/daqval/settings \
+	xaas/wide/base/zone \
+	xaas/wide/base/client \
+	xaas/slim/ttc904/zone \
+        xaas/slim/ttc904/client \
+        xaas/slim/ttc904/service \
+        xaas/slim/ttc904/settings \
+        xaas/slim/ttc904/extension \
+        xaas/slim/ttcp5/zone \
+        xaas/slim/ttcp5/client \
+        xaas/slim/ttcp5/service \
+        xaas/slim/ttcp5/settings \
+        xaas/slim/ttcp5/extension \
+        xaas/slim/dcs/zone \
+        xaas/slim/dcs/client \
+        xaas/slim/dcs/service \
+        xaas/slim/dcs/settings \
+        xaas/slim/dcs/extension \
+        xaas/slim/scal/zone \
+        xaas/slim/scal/client \
+        xaas/slim/scal/service \
+        xaas/slim/scal/settings \
+        xaas/slim/scal/extension \
+        xaas/slim/ecal/zone \
+        xaas/slim/ecal/client \
+        xaas/slim/ecal/service \
+        xaas/slim/ecal/settings \
+        xaas/slim/ecal/extension \
+        xaas/slim/es/zone \
+        xaas/slim/es/client \
+        xaas/slim/es/service \
+        xaas/slim/es/settings \
+        xaas/slim/es/extension \
+        xaas/slim/pixel/zone \
+        xaas/slim/pixel/client \
+        xaas/slim/pixel/service \
+        xaas/slim/pixel/settings \
+        xaas/slim/pixel/extension \
+        xaas/slim/tracker/zone \
+        xaas/slim/tracker/client \
+        xaas/slim/tracker/service \
+        xaas/slim/tracker/settings \
+        xaas/slim/tracker/extension \
+        xaas/slim/emu/zone \
+        xaas/slim/emu/client \
+        xaas/slim/emu/service \
+        xaas/slim/emu/settings \
+        xaas/slim/emu/extension \
+        xaas/slim/emu11/zone \
+        xaas/slim/emu11/client \
+        xaas/slim/emu11/service \
+        xaas/slim/emu11/settings \
+        xaas/slim/emu11/extension \
+        xaas/wide/cms/zone \
+        xaas/wide/cms/settings \
+        xaas/wide/cms/service \
+        xaas/slim/daqtest/zone \
+        xaas/slim/daqtest/client \
+        xaas/slim/daqtest/service \
+        xaas/slim/daqtest/settings \
+        xaas/slim/daqtest/extension \
+        xaas/slim/lumi/zone \
+        xaas/slim/lumi/client \
+        xaas/slim/lumi/service \
+        xaas/slim/lumi/settings \
+        xaas/slim/lumi/extension \
+        xaas/slim/rpc/zone \
+        xaas/slim/rpc/client \
+        xaas/slim/rpc/service \
+        xaas/slim/rpc/settings \
+        xaas/slim/rpc/extension \
+        xaas/slim/muondt/zone \
+        xaas/slim/muondt/client \
+        xaas/slim/muondt/service \
+        xaas/slim/muondt/settings \
+        xaas/slim/muondt/extension \
+        xaas/slim/ttctest/zone \
+        xaas/slim/ttctest/client \
+        xaas/slim/ttctest/service \
+        xaas/slim/ttctest/settings \
+        xaas/slim/ttctest/extension 

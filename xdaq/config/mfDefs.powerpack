@@ -1,0 +1,85 @@
+# $Id: mfDefs.powerpack,v 1.11 2008/07/18 15:26:30 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+
+ifndef XMAS_UTILS_PREFIX
+XMAS_UTILS_PREFIX=$(BUILD_HOME)/daq/xmas/utils
+endif
+XMAS_UTILS_INCLUDE_PREFIX=$(XMAS_UTILS_PREFIX)/include $(XMAS_UTILS_PREFIX)/include/$(XDAQ_OS)
+XMAS_UTILS_LIB_PREFIX=$(XMAS_UTILS_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+
+ifndef PTTCP_PREFIX
+PTTCP_PREFIX=$(BUILD_HOME)/daq/pt/tcp
+endif
+PTTCP_INCLUDE_PREFIX=$(PTTCP_PREFIX)/include $(PTTCP_PREFIX)/include/$(XDAQ_OS)
+PTTCP_LIB_PREFIX=$(PTTCP_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+
+ifndef XSLP_PREFIX
+XSLP_PREFIX=$(BUILD_HOME)/daq/xslp
+endif
+XSLP_INCLUDE_PREFIX=$(XSLP_PREFIX)/include $(XSLP_PREFIX)/include/$(XDAQ_OS)
+XSLP_LIB_PREFIX=$(XSLP_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+
+ifndef XPLORE_PREFIX
+XPLORE_PREFIX=$(BUILD_HOME)/daq/xplore
+endif
+XPLORE_INCLUDE_PREFIX=$(XPLORE_PREFIX)/include $(XPLORE_PREFIX)/include/$(XDAQ_OS)
+XPLORE_LIB_PREFIX=$(XPLORE_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+
+ifndef XPLORE_UTILS_PREFIX
+XPLORE_UTILS_PREFIX=$(BUILD_HOME)/daq/xplore/utils
+endif
+XPLORE_UTILS_INCLUDE_PREFIX=$(XPLORE_UTILS_PREFIX)/include $(XPLORE_UTILS_PREFIX)/include/$(XDAQ_OS)
+XPLORE_UTILS_LIB_PREFIX=$(XPLORE_UTILS_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+
+ifndef WS_ADDRESSING_PREFIX
+WS_ADDRESSING_PREFIX=$(BUILD_HOME)/daq/ws/addressing
+endif
+WS_ADDRESSING_INCLUDE_PREFIX=$(WS_ADDRESSING_PREFIX)/include $(WS_ADDRESSING_PREFIX)/include/$(XDAQ_OS)
+WS_ADDRESSING_LIB_PREFIX=$(WS_ADDRESSING_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+
+ifndef WS_EVENTING_PREFIX
+WS_EVENTING_PREFIX=$(BUILD_HOME)/daq/ws/eventing
+endif
+WS_EVENTING_INCLUDE_PREFIX=$(WS_EVENTING_PREFIX)/include $(WS_EVENTING_PREFIX)/include/$(XDAQ_OS)
+WS_EVENTING_LIB_PREFIX=$(WS_EVENTING_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef WS_UTILS_PREFIX
+WS_UTILS_PREFIX=$(BUILD_HOME)/daq/ws/utils
+endif
+WS_UTILS_INCLUDE_PREFIX=$(WS_UTILS_PREFIX)/include $(WS_UTILS_PREFIX)/include/$(XDAQ_OS)
+WS_UTILS_LIB_PREFIX=$(WS_UTILS_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef SENTINEL_PREFIX
+SENTINEL_PREFIX=$(BUILD_HOME)/daq/sentinel
+endif
+SENTINEL_INCLUDE_PREFIX=$(SENTINEL_PREFIX)/include $(SENTINEL_UTILS_PREFIX)/include/$(XDAQ_OS)
+SENTINEL_LIB_PREFIX=$(SENTINEL_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef SENTINEL_UTILS_PREFIX
+SENTINEL_UTILS_PREFIX=$(BUILD_HOME)/daq/sentinel/utils
+endif
+SENTINEL_UTILS_INCLUDE_PREFIX=$(SENTINEL_UTILS_PREFIX)/include $(SENTINEL_UTILS_PREFIX)/include/$(XDAQ_OS)
+SENTINEL_UTILS_LIB_PREFIX=$(SENTINEL_UTILS_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef WS_BROKER_UTILS_PREFIX
+WS_BROKER_UTILS_PREFIX=$(BUILD_HOME)/daq/ws/broker/utils
+endif
+WS_BROKER_UTILS_INCLUDE_PREFIX=$(WS_BROKER_UTILS_PREFIX)/include $(WS_BROKER_UTILS_PREFIX)/include/$(XDAQ_OS)
+WS_BROKER_UTILS_LIB_PREFIX=$(WS_BROKER_UTILS_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+

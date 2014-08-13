@@ -1,0 +1,39 @@
+# $Id$
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+full=
+include $(XDAQ_ROOT)/config/mfSet.extern_coretools
+full:=$(full) $(Packages)
+
+include $(XDAQ_ROOT)/config/mfSet.extern_powerpack
+full:=$(full) $(Packages)
+
+include $(XDAQ_ROOT)/config/mfSet.coretools
+full:=$(full) $(Packages)
+
+include $(XDAQ_ROOT)/config/mfSet.powerpack
+full:=$(full) $(Packages)
+
+include $(XDAQ_ROOT)/config/mfSet.database_worksuite
+full:=$(full) $(Packages)
+include $(XDAQ_ROOT)/config/mfSet.dcs_worksuite
+full:=$(full) $(Packages)
+include $(XDAQ_ROOT)/config/mfSet.general_worksuite
+full:=$(full) $(Packages)
+include $(XDAQ_ROOT)/config/mfSet.hardware_worksuite_nodrivers
+full:=$(full) $(Packages)
+
+include $(XDAQ_ROOT)/config/mfSet.xaas
+full:=$(full) $(Packages)
+
+Packages:=$(full)
+

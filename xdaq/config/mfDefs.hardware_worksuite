@@ -1,0 +1,138 @@
+# $Id: mfDefs.hardware_worksuite,v 1.3 2008/07/18 15:26:30 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+ifndef CAENVME_PREFIX
+CAENVME_PREFIX=$(BUILD_HOME)/daq/extern/caen/caenvmelib/$(XDAQ_PLATFORM)
+endif
+CAENVME_INCLUDE_PREFIX=$(CAENVME_PREFIX)/include $(CAENVME_PREFIX)/include/$(XDAQ_OS)
+CAENVME_LIB_PREFIX=$(CAENVME_PREFIX)/lib
+
+ifndef HAL_PREFIX
+HAL_PREFIX=$(BUILD_HOME)/daq/hal
+HAL_INCLUDE_PREFIX=$(HAL_PREFIX)/busAdapter/dummy/include \
+$(HAL_PREFIX)/busAdapter/caen/include \
+$(HAL_PREFIX)/busAdapter/pci/include \
+$(HAL_PREFIX)/busAdapter/sbs/include \
+$(HAL_PREFIX)/generic/include $(HAL_PREFIX)/generic/include/$(XDAQ_OS) \
+$(HAL_PREFIX)/utilities/include $(HAL_PREFIX)/utilities/include/$(XDAQ_OS)
+HAL_LIB_PREFIX=$(HAL_PREFIX)/busAdapter/dummy/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+$(HAL_PREFIX)/busAdapter/caen/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+$(HAL_PREFIX)/busAdapter/pci/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+$(HAL_PREFIX)/busAdapter/sbs/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) \
+$(HAL_PREFIX)/generic/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)  \
+$(HAL_PREFIX)/utilities/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+else
+HAL_INCLUDE_PREFIX=$(HAL_PREFIX)/include $(HAL_PREFIX)/include/$(XDAQ_OS)
+HAL_LIB_PREFIX=$(HAL_PREFIX)/lib
+endif
+
+#ifndef GENERICPCI_PREFIX
+#GENERICPCI_PREFIX=$(BUILD_HOME)/daq/extern/generic_pci_access/$(XDAQ_PLATFORM)
+#endif
+#GENERICPCI_INCLUDE_PREFIX=$(GENERICPCI_PREFIX)/include $(GENERICPCI_PREFIX)/include/$(XDAQ_OS)
+#GENERICPCI_LIB_PREFIX=$(GENERICPCI_PREFIX)/lib
+
+ifndef XPCIDRV_PREFIX
+XPCIDRV_PREFIX=$(BUILD_HOME)/daq/xpci/drv
+endif
+XPCIDRV_INCLUDE_PREFIX=$(XPCIDRV_PREFIX)/include $(XPCIDRV_PREFIX)/include/$(XDAQ_OS)
+
+ifndef XPCI_PREFIX
+XPCI_PREFIX=$(BUILD_HOME)/daq/xpci/
+endif
+XPCI_INCLUDE_PREFIX=$(XPCI_PREFIX)/include $(XPCI_PREFIX)/include/$(XDAQ_OS)
+XPCI_LIB_PREFIX=$(XPCI_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef TTS_TTSBASE_PREFIX
+TTS_TTSBASE_PREFIX=$(BUILD_HOME)/daq/tts/ttsbase
+endif
+TTS_TTSBASE_INCLUDE_PREFIX=$(TTS_TTSBASE_PREFIX)/include
+TTS_TTSBASE_LIB_PREFIX=$(TTS_TTSBASE_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef TTS_IPCUTILS_PREFIX
+TTS_IPCUTILS_PREFIX=$(BUILD_HOME)/daq/tts/ipcutils
+endif
+TTS_IPCUTILS_INCLUDE_PREFIX=$(TTS_IPCUTILS_PREFIX)/include
+TTS_IPCUTILS_LIB_PREFIX=$(TTS_IPCUTILS_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef TTS_CPCIBASE_PREFIX
+TTS_CPCIBASE_PREFIX=$(BUILD_HOME)/daq/tts/cpcibase
+endif
+TTS_CPCIBASE_INCLUDE_PREFIX=$(TTS_CPCIBASE_PREFIX)/include
+TTS_CPCIBASE_LIB_PREFIX=$(TTS_CPCIBASE_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef TTS_FMMTD_PREFIX
+TTS_FMMTD_PREFIX=$(BUILD_HOME)/daq/tts/fmmtd
+endif
+TTS_FMMTD_INCLUDE_PREFIX=$(TTS_FMMTD_PREFIX)/include
+TTS_FMMTD_LIB_PREFIX=$(TTS_FMMTD_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef TTS_FMMDBI_PREFIX
+TTS_FMMDBI_PREFIX=$(BUILD_HOME)/daq/tts/fmmdbi
+endif
+TTS_FMMDBI_INCLUDE_PREFIX=$(TTS_FMMDBI_PREFIX)/include
+TTS_FMMDBI_LIB_PREFIX=$(TTS_FMMDBI_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef TTS_FMM_PREFIX
+TTS_FMM_PREFIX=$(BUILD_HOME)/daq/tts/fmm
+endif
+TTS_FMM_INCLUDE_PREFIX=$(TTS_FMM_PREFIX)/include
+TTS_FMM_LIB_PREFIX=$(TTS_FMM_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+
+ifndef D2S_GTPE_PREFIX
+D2S_GTPE_PREFIX=$(BUILD_HOME)/daq/d2s/gtpe
+endif
+D2S_GTPE_INCLUDE_PREFIX=$(D2S_GTPE_PREFIX)/include
+D2S_GTPE_LIB_PREFIX=$(D2S_GTPE_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef JAL_JTAGCONTROLLER_PREFIX
+JAL_JTAGCONTROLLER_PREFIX=$(BUILD_HOME)/daq/jal/jtagController
+endif
+JAL_JTAGCONTROLLER_INCLUDE_PREFIX=$(JAL_JTAGCONTROLLER_PREFIX)/include
+JAL_JTAGCONTROLLER_LIB_PREFIX=$(JAL_JTAGCONTROLLER_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+
+ifndef JAL_JTAGCHAIN_PREFIX
+JAL_JTAGCHAIN_PREFIX=$(BUILD_HOME)/daq/jal/jtagChain
+endif
+JAL_JTAGCHAIN_INCLUDE_PREFIX=$(JAL_JTAGCHAIN_PREFIX)/include
+JAL_JTAGCHAIN_LIB_PREFIX=$(JAL_JTAGCHAIN_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef JAL_JTAGSVFSEQUENCER_PREFIX
+JAL_JTAGSVFSEQUENCER_PREFIX=$(BUILD_HOME)/daq/jal/jtagSVFSequencer
+endif
+JAL_JTAGSVFSEQUENCER_INCLUDE_PREFIX=$(JAL_JTAGSVFSEQUENCER_PREFIX)/include
+JAL_JTAGSVFSEQUENCER_LIB_PREFIX=$(JAL_JTAGSVFSEQUENCER_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef MYRICS_PREFIX
+MYRICS_PREFIX=$(BUILD_HOME)/daq/myrics/myrfb
+endif
+MYRICS_INCLUDE_PREFIX=$(MYRICS_PREFIX)/include
+MYRICS_LIB_PREFIX=$(MYRICS_PREFIX)/lib
+
+ifndef PHEAPS_PREFIX
+PHEAPS_PREFIX=$(BUILD_HOME)/daq/pheaps
+endif
+PHEAPS_INCLUDE_PREFIX=$(PHEAPS_PREFIX)/include
+PHEAPS_LIB_PREFIX=$(PHEAPS_PREFIX)/lib
+
+ifndef FEDKIT_PREFIX
+FEDKIT_PREFIX=$(BUILD_HOME)/daq/fedkit
+endif
+FEDKIT_INCLUDE_PREFIX=$(FEDKIT_PREFIX)/include
+FEDKIT_LIB_PREFIX=$(FEDKIT_PREFIX)/lib
+
+ifndef FEDBUILDER_PREFIX
+FEDBUILDER_PREFIX=$(BUILD_HOME)/daq/fedbuilder
+endif
+FEDBUILDER_INCLUDE_PREFIX=$(FEDBUILDER_PREFIX)/include $(FEDBUILDER_PREFIX)/tools/include $(FEDBUILDER_PREFIX)/frlcontroller/include $(FEDBUILDER_PREFIX)/fbo/include
+FEDBUILDER_LIB_PREFIX=$(FEDBUILDER_PREFIX)/tools/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) $(FEDBUILDER_PREFIX)/frlcontroller/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM) $(FEDBUILDER_PREFIX)/fbo/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)

@@ -1,0 +1,22 @@
+# $Id: mfRPM.release,v 1.6 2008/07/18 15:26:30 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+# This number determines the number for a given baseline release
+# It identifies all compatible packages and their dependencies for a given
+# build. 
+# Updates of RPM shall be performed within the same PACKAGE_RELEASE number.
+# If backward compatibility is broken for any of the packages a baseline 
+# release, a new number is given and a new baseline shall be generated.
+# This is a librarian responsibility and it is not an automatic process.
+# 
+
+PACKAGE_RELEASE=cmsos11

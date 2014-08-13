@@ -1,0 +1,54 @@
+# $Id: mfDefs.extern_worksuite,v 1.7 2008/07/18 15:26:30 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+ifndef PSTREAMS_PREFIX
+PSTREAMS_PREFIX=$(BUILD_HOME)/daq/extern/pstreams/$(XDAQ_PLATFORM)
+endif
+PSTREAMS_INCLUDE_PREFIX=$(PSTREAMS_PREFIX)/include
+PSTREAMS_LIB_PREFIX=$(PSTREAMS_PREFIX)/lib
+
+
+ifndef SBSVME_PREFIX
+SBSVME_PREFIX=$(BUILD_HOME)/daq/extern/SBSVME/$(XDAQ_PLATFORM)
+endif
+SBSVME_INCLUDE_PREFIX=$(SBSVME_PREFIX)/include $(SBSVME_PREFIX)/include/$(XDAQ_OS)
+SBSVME_LIB_PREFIX=$(SBSVME_PREFIX)/lib
+
+ifndef CAENVME_PREFIX
+CAENVME_PREFIX=$(BUILD_HOME)/daq/extern/CAENVME/$(XDAQ_PLATFORM)
+endif
+CAENVME_INCLUDE_PREFIX=$(CAENVME_PREFIX)/include $(CAENVME_PREFIX)/include/$(XDAQ_OS)
+CAENVME_LIB_PREFIX=$(CAENVME_PREFIX)/lib
+
+ifndef DIM_PREFIX
+DIM_PREFIX=$(BUILD_HOME)/daq/extern/dim/$(XDAQ_PLATFORM)
+endif
+DIM_INCLUDE_PREFIX=$(DIM_PREFIX)/include/dim
+DIM_LIB_PREFIX=$(DIM_PREFIX)/lib
+
+ifndef SMI_PREFIX
+SMI_PREFIX=$(BUILD_HOME)/daq/extern/smi/$(XDAQ_PLATFORM)
+endif
+SMI_INCLUDE_PREFIX=$(SMI_PREFIX)/include/smixx
+SMI_LIB_PREFIX=$(SMI_PREFIX)/lib
+
+ifndef PVSS_PREFIX
+PVSS_PREFIX=$(BUILD_HOME)/daq/extern/pvss/$(XDAQ_PLATFORM)
+endif
+PVSS_INCLUDE_PREFIX=$(PVSS_PREFIX)/include
+PVSS_LIB_PREFIX=$(PVSS_PREFIX)/lib
+
+ifndef ROOT_PREFIX
+PVSS_PREFIX=$(BUILD_HOME)/daq/extern/root/$(XDAQ_PLATFORM)
+endif
+ROOT_INCLUDE_PREFIX=$(ROOT_PREFIX)/include
+ROOT_LIB_PREFIX=$(ROOT_PREFIX)/lib

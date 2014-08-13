@@ -1,0 +1,34 @@
+# $Id: mfDefs.database_worksuite,v 1.2 2008/07/18 15:26:30 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+ifndef TSTORE_UTILS_PREFIX
+TSTORE_UTILS_PREFIX=$(BUILD_HOME)/daq/tstore/utils
+endif
+TSTORE_UTILS_INCLUDE_PREFIX=$(TSTORE_UTILS_PREFIX)/include $(TSTORE_UTILS_PREFIX)/include/$(XDAQ_OS)
+TSTORE_UTILS_LIB_PREFIX=$(TSTORE_UTILS_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef TSTORE_CLIENT_PREFIX
+TSTORE_CLIENT_PREFIX=$(BUILD_HOME)/daq/tstore/client
+endif
+TSTORE_CLIENT_INCLUDE_PREFIX=$(TSTORE_CLIENT_PREFIX)/include $(TSTORE_CLIENT_PREFIX)/include/$(XDAQ_OS)
+TSTORE_CLIENT_LIB_PREFIX=$(TSTORE_CLIENT_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef TSTORE_API_PREFIX
+TSTORE_API_PREFIX=$(BUILD_HOME)/daq/tstore/api
+endif
+TSTORE_API_INCLUDE_PREFIX=$(TSTORE_API_PREFIX)/include $(TSTORE_API_PREFIX)/include/$(XDAQ_OS)
+TSTORE_API_LIB_PREFIX=$(TSTORE_API_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef ORACLE_PREFIX
+ORACLE_PREFIX=$(BUILD_HOME)/daq/extern/oracle/$(XDAQ_PLATFORM)
+endif
+ORACLE_INCLUDE_PREFIX=$(ORACLE_PREFIX)/include
+ORACLE_LIB_PREFIX=$(ORACLE_PREFIX)/lib

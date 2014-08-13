@@ -1,0 +1,26 @@
+# $Id: mfSet.general_worksuite,v 1.5 2008/09/19 11:35:35 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+Packages=\
+	extern/dim \
+	extern/smi \
+	extern/yui \
+	xdaq2rc \
+	interface/evb \
+	interface/shared \
+	pt/atcp \
+	rubuilder \
+	state/dashboard \
+	state/panel \
+	evf \
+	jobcontrol
+

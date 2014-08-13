@@ -1,0 +1,11 @@
+CVS
+*.d
+*.o
+*.so
+*.exe
+*.tgz
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico

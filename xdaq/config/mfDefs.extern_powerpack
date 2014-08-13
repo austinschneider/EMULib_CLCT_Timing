@@ -1,0 +1,45 @@
+# $Id: mfDefs.extern_powerpack,v 1.8 2008/07/18 15:26:30 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+ifndef PSTREAMS_PREFIX
+PSTREAMS_PREFIX=$(BUILD_HOME)/daq/extern/pstreams/$(XDAQ_PLATFORM)
+endif
+PSTREAMS_INCLUDE_PREFIX=$(PSTREAMS_PREFIX)/include
+PSTREAMS_LIB_PREFIX=$(PSTREAMS_PREFIX)/lib
+
+ifndef SQLITE_PREFIX
+SQLITE_PREFIX=$(BUILD_HOME)/daq/extern/sqlite/$(XDAQ_PLATFORM)
+endif
+SQLITE_INCLUDE_PREFIX=$(SQLITE_PREFIX)/include
+SQLITE_LIB_PREFIX=$(SQLITE_PREFIX)/lib
+
+ifndef SLP_PREFIX
+SLP_PREFIX=$(BUILD_HOME)/daq/extern/slp/$(XDAQ_PLATFORM)
+endif
+SLP_INCLUDE_PREFIX=$(SLP_PREFIX)/include
+SLP_LIB_PREFIX=$(SLP_PREFIX)/lib
+
+
+ifndef SSH_PREFIX
+SSH_PREFIX=$(BUILD_HOME)/daq/extern/ssh/$(XDAQ_PLATFORM)
+endif
+SSH_INCLUDE_PREFIX=$(SSH_PREFIX)/include
+SSH_LIB_PREFIX=$(SLP_PREFIX)/lib
+
+ifndef APPWEB_PREFIX
+APPWEB_PREFIX=
+APPWEB_PREFIX=$(BUILD_HOME)/daq/extern/appweb/$(XDAQ_PLATFORM)
+endif
+APPWEB_INCLUDE_PREFIX=$(APPWEB_PREFIX)/include
+APPWEB_LIB_PREFIX=$(APPWEB_PREFIX)/lib
+APPWEB_SBIN_PREFIX=$(APPWEB_PREFIX)/sbin
+

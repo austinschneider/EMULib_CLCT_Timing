@@ -1,0 +1,53 @@
+# $Id: mfDefs.general_worksuite,v 1.2 2008/07/18 15:26:30 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+ifndef JOBCONTROL_PREFIX
+JOBCONTROL_PREFIX=$(BUILD_HOME)/daq/jobcontrol
+endif
+JOBCONTROL_INCLUDE_PREFIX=$(JOBCONTROL_PREFIX)/include $(JOBCONTROL_PREFIX)/include/$(XDAQ_OS)
+JOBCONTROL_LIB_PREFIX=$(JOBCONTROL_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef XDAQ2RC_PREFIX
+XDAQ2RC_PREFIX=$(BUILD_HOME)/daq/xdaq2rc
+endif
+XDAQ2RC_INCLUDE_PREFIX=$(XDAQ2RC_PREFIX)/include $(XDAQ2RC_PREFIX)/include/$(XDAQ_OS)
+XDAQ2RC_LIB_PREFIX=$(XDAQ2RC_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef INTERFACE_EVB_PREFIX
+INTERFACE_EVB_PREFIX=$(BUILD_HOME)/daq/interface/evb
+endif
+INTERFACE_EVB_INCLUDE_PREFIX=$(INTERFACE_EVB_PREFIX)/include $(INTERFACE_EVB_PREFIX)/include/$(XDAQ_OS)
+INTERFACE_EVB_LIB_PREFIX=$(INTERFACE_EVB_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef INTERFACE_SHARED_PREFIX
+INTERFACE_SHARED_PREFIX=$(BUILD_HOME)/daq/interface/shared
+endif
+INTERFACE_SHARED_INCLUDE_PREFIX=$(INTERFACE_SHARED_PREFIX)/include $(INTERFACE_SHARED_PREFIX)/include/$(XDAQ_OS)
+INTERFACE_SHARED_LIB_PREFIX=$(INTERFACE_SHARED_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef INTERFACE_DFC_PREFIX
+INTERFACE_DFC_PREFIX=$(BUILD_HOME)/daq/interface/dfc
+endif
+INTERFACE_DFC_INCLUDE_PREFIX=$(INTERFACE_DFC_PREFIX)/include $(INTERFACE_DFC_PREFIX)/include/$(XDAQ_OS)
+INTERFACE_DFC_LIB_PREFIX=$(INTERFACE_DFC_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef RUBUILDERAPP_PREFIX
+RUBUILDERAPP_PREFIX=$(BUILD_HOME)/daq/rubuilder/rubuilderapp
+endif
+RUBUILDERAPP_INCLUDE_PREFIX=$(RUBUILDERAPP_PREFIX)/include $(RUBUILDERAPP_PREFIX)/include/$(XDAQ_OS)
+RUBUILDERAPP_LIB_PREFIX=$(RUBUILDERAPP_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)
+
+ifndef RUBUILDERUTILS_PREFIX
+RUBUILDERUTILS_PREFIX=$(BUILD_HOME)/daq/rubuilder/utils
+endif
+RUBUILDERUTILS_INCLUDE_PREFIX=$(RUBUILDERUTILS_PREFIX)/include $(RUBUILDERUTILS_PREFIX)/include/$(XDAQ_OS)
+RUBUILDERUTILS_LIB_PREFIX=$(RUBUILDERUTILS_PREFIX)/lib/$(XDAQ_OS)/$(XDAQ_PLATFORM)

@@ -1,0 +1,127 @@
+
+rpm: _rpmall
+
+installrpm: _installrpmall
+
+cleanrpm: _cleanrpmall
+
+changelog: _changelogall
+
+
+INSTALL_PATH = /opt/xdaq
+PackagePath  = $(shell cd $(BUILD_HOME)/$(Project)/$(Package);pwd)
+PWD          = $(shell pwd)
+
+
+ifndef PackageName
+ERROR="Missing PackageName for '$(Package)'
+endif
+
+ifndef PACKAGE_VER_MAJOR
+ERROR="Missing major version number for '$(Package)'
+endif
+
+ifndef PACKAGE_VER_MINOR
+ERROR="Missing minor version number for '$(Package)'
+endif
+
+ifndef PACKAGE_VER_PATCH
+ERROR="Missing patch version number for '$(Package)'
+endif
+
+ifndef PACKAGE_RELEASE
+include  $(XDAQ_ROOT)/config/mfRPM.release
+endif
+
+ifndef BUILD_VERSION
+BUILD_VERSION=1
+endif
+
+ifndef BUILD_COMPILER
+BUILD_COMPILER :=$(CC)$(shell $(CC) -dumpversion | sed -e 's/\./_/g')
+endif
+
+ifndef BUILD_DISTRIBUTION
+BUILD_DISTRIBUTION := $(shell $(XDAQ_ROOT)/config/checkos.sh)
+endif
+
+#
+# Extract summary, description and authors
+#
+ifndef Description
+ERROR="Missing Description for '$(Package)'
+endif
+
+ifndef Summary
+ERROR="Missing Summary for '$(Package)'
+endif
+
+ifndef Authors
+ERROR="Missing Authors for '$(Package)'
+endif
+
+ifndef Link
+ERROR="Missing Link for '$(Package)'
+endif
+
+
+
+.PHONY: _rpmall
+
+ifneq ($(ERROR),)
+_rpmall: fail
+fail:
+	$(error $(ERROR))
+else
+_rpmall: spec_update makerpm
+endif
+
+
+.PHONY: makerpm
+makerpm:
+	mkdir -p $(PackagePath)/rpm/RPMBUILD/{RPMS/{$(XDAQ_PLATFORM)},SPECS,BUILD,SOURCES,SRPMS}
+	rpmbuild  --quiet -bb -bl --define  "_topdir $(PackagePath)/rpm/RPMBUILD"  $(PackagePath)/rpm/$(PackageName).spec
+	find  $(PackagePath)/rpm/RPMBUILD -name "*.rpm" -exec mv {} $(PackagePath)/rpm \;
+	
+.PHONY: spec_update
+spec_update: 
+	mkdir -p $(PackagePath)/rpm
+	cp $(XDAQ_ROOT)/config/BuildSpec.template $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__release__#$(BUILD_VERSION).$(PACKAGE_RELEASE).$(BUILD_DISTRIBUTION).$(BUILD_COMPILER)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__version__#$(PACKAGE_VER_MAJOR).$(PACKAGE_VER_MINOR).$(PACKAGE_VER_PATCH)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__prefix__#$(INSTALL_PATH)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__package__#$(Package)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__packagedir__#$(PackagePath)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__packagename__#$(PackageName)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__os__#$(XDAQ_OS)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__platform__#$(XDAQ_PLATFORM)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__project__#$(Project)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__author__#$(Authors)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__summary__#$(Summary)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__description__#$(Description)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__url__#$(Link)#' $(PackagePath)/rpm/$(PackageName).spec
+	perl -p -i -e 's#__buildarch__#$(XDAQ_PLATFORM)#' $(PackagePath)/rpm/$(PackageName).spec
+
+
+	
+.PHONY: _cleanrpmall
+_cleanrpmall:
+	-rm -rf $(PackagePath)/rpm
+	
+.PHONY: _installrpmall
+_installrpmall:
+	mkdir -p $(INSTALL_PREFIX)/rpm
+	cp $(PackagePath)/rpm/*.rpm $(INSTALL_PREFIX)/rpm
+ 
+
+
+.PHONY: _changelogall
+_changelogall:
+	cd $(PackagePath);\
+	svn --verbose log > ChangeLog
+ 
+
+
+
+
+

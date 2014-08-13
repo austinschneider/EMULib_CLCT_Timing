@@ -1,0 +1,96 @@
+# $Id: mfSet.powerpack,v 1.11 2008/07/25 07:20:04 gutleber Exp $
+
+#########################################################################
+# XDAQ Components for Distributed Data Acquisition                      #
+# Copyright (C) 2000-2009, CERN.			                #
+# All rights reserved.                                                  #
+# Authors: J. Gutleber and L. Orsini					#
+#                                                                       #
+# For the licensing terms see LICENSE.		                        #
+# For the list of contributors see CREDITS.   			        #
+#########################################################################
+
+ifeq ($(XDAQ_OS),macosx)
+Packages=\
+	b2in/utils \
+	b2in/eventing \
+	pt/tcp \
+	sentinel/utils \
+	sentinel \
+	sentinel/probe2g \
+	sentinel/tester \
+	sentinel/bridge2g \
+	sentinel/spotlight \
+	sentinel/spotlight2g \
+	ws/addressing \
+	ws/eventing \
+	ws/client \
+	ws/service \
+	ws/utils \
+	ws/broker/utils \
+	ws/broker \
+	xmas/admin \
+	xmas/broker2g \
+	xmas/sensor2g \
+	xmas/heartbeat \
+	xmas/las2g \
+	xmas/collector2g \
+	xmas/utils \
+	xmas/sensor \
+	xmas/sensord \
+	xmas/probe \
+	xmas/pulser \
+	xmas/tester \
+	xmas/las \
+	xmas/bridge2g \
+	xmas/slash2g \
+	benchmark/roundtrip \
+	benchmark/mstreamio \
+	xmem \
+	xmem/probe \
+	xaccess
+else
+Packages=\
+	b2in/utils \
+	b2in/eventing \
+	pt/tcp \
+	pt/appweb \
+	xplore/utils \
+	xslp \
+	xplore \
+	sentinel/utils \
+	sentinel \
+	sentinel/probe2g \
+	sentinel/tester \
+	sentinel/bridge2g \
+	sentinel/spotlight \
+	sentinel/spotlight2g \
+	ws/addressing \
+	ws/eventing \
+	ws/client \
+	ws/service \
+	ws/utils \
+	ws/broker/utils \
+	ws/broker \
+	xmas/admin \
+	xmas/broker2g \
+	xmas/sensor2g \
+	xmas/heartbeat \
+	xmas/las2g \
+	xmas/collector2g \
+	xmas/utils \
+	xmas/sensor \
+	xmas/sensord \
+	xmas/probe \
+	xmas/pulser \
+	xmas/tester \
+	xmas/las \
+	xmas/bridge2g \
+	xmas/slash2g \
+	benchmark/roundtrip \
+	benchmark/mstreamio \
+	xmem \
+	xmem/probe \
+	xaccess
+endif
+
