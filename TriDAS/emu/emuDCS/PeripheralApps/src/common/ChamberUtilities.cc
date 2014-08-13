@@ -2260,21 +2260,19 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 
 	CFEBTiming_PrintConfiguration(config);
 
-	//if(print_data) {
+	if(is_me11_) {
 		CFEBTiming_ConfigureLevel(config);
 		usleep(1000000);
 		CFEBTiming_ConfigureLevel(config);
 		usleep(1000000);
 		CFEBTiming_CheckConfiguration(config);
-	//}
-	/*
+	}
 	else {
 		thisCCB_->setCCBMode(CCB::VMEFPGA);
 		thisCCB_->hardReset();
 		thisCCB_->setCCBMode(CCB::DLOG);
 		ConfigureTMB(config);
 	}
-	*/
 
 	usleep(10000);
 
