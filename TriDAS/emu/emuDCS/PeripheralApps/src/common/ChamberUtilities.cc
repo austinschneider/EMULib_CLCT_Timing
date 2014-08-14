@@ -2239,7 +2239,7 @@ void ChamberUtilities::CFEBTiming_with_Posnegs_simple_routine(bool is_inject_sca
 	config.clct_pattern_trig_en = 1;
 	config.clct_ext_trig_en = 1;
 	config.tmb_allow_clct = 1;
-	config.hs_pretrig_hit_thresh = 5;
+	config.hs_pretrig_hit_thresh = 6;
 	config.min_hits_pattern = 1;
 	config.ignore_ccb_startstop = 0;
 	config.layer_trigger_en = 0;
