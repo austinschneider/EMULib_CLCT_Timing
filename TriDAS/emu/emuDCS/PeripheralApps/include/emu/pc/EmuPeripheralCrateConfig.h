@@ -527,17 +527,12 @@ private:
   void CFEBTimingME11b(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
   void CFEBTimingME11a(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
   void CFEBTimingSimpleScan(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
-  void CFEBTimingDebug(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
-  void CFEBTimingLayerMaskScan(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
-  void CFEBTimingHalfStripScan(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
 
   void CFEBTimingL1AWindowScan(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
-  void CFEBTimingDMBDebug(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
   void CFEBTimingSetRxDelay(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
   void CFEBTimingSetTOF(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
   void CFEBTimingSetTMBL1ADelay(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
   void CFEBTimingSetCCBL1ADelay(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
-  void Step_21(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception);
 
 
   void TMBL1aTiming(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception); 
