@@ -453,17 +453,11 @@ EmuPeripheralCrateConfig::EmuPeripheralCrateConfig(xdaq::ApplicationStub * s): E
   xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingME11b, "CFEBTimingME11b");
   xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingME11a, "CFEBTimingME11a");
   xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingSimpleScan, "CFEBTimingSimpleScan");
-  xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingDebug, "CFEBTimingDebug");
-  xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingLayerMaskScan, "CFEBTimingLayerMaskScan");
-  xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingHalfStripScan, "CFEBTimingHalfStripScan");
-  xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingDMBDebug, "CFEBTimingDMBDebug");
   xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingL1AWindowScan, "CFEBTimingL1AWindowScan");
-  xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingDMBDebug, "CFEBTimingDMBDebug");
   xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingSetRxDelay, "CFEBTimingSetRxDelay");
   xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingSetTOF, "CFEBTimingSetTOF");
   xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingSetTMBL1ADelay, "CFEBTimingSetTMBL1ADelay");
   xgi::bind(this,&EmuPeripheralCrateConfig::CFEBTimingSetCCBL1ADelay, "CFEBTimingSetCCBL1ADelay");
-  xgi::bind(this,&EmuPeripheralCrateConfig::Step_21, "Step_21");
   xgi::bind(this,&EmuPeripheralCrateConfig::RatTmbTiming, "RatTmbTiming");
   xgi::bind(this,&EmuPeripheralCrateConfig::RpcRatTiming, "RpcRatTiming");
   //
@@ -5696,126 +5690,6 @@ void EmuPeripheralCrateConfig::CFEBTimingSimpleScan(xgi::Input * in, xgi::Output
   //
 }
 
-void EmuPeripheralCrateConfig::CFEBTimingDebug(xgi::Input * in, xgi::Output * out )
-  throw (xgi::exception::Exception) {
-  //
-  std::cout << "CFEBTiming ME1/1A" << std::endl;
-  LOG4CPLUS_INFO(getApplicationLogger(), "CFEBTiming");
-  //
-  cgicc::Cgicc cgi(in);
-  //
-  int tmb=0, dmb=0;
-  //
-  cgicc::form_iterator name = cgi.getElement("dmb");
-  //
-  if(name != cgi.getElements().end()) {
-    dmb = cgi["dmb"]->getIntegerValue();
-    std::cout << "CFEBTiming ME1/1A:  DMB " << dmb << std::endl;
-    DMB_ = dmb;
-  } else {
-    std::cout << "CFEBTiming ME1/1A:  No dmb" << std::endl;
-    dmb = DMB_;
-  }
-  //
-  name = cgi.getElement("tmb");
-  //
-  if(name != cgi.getElements().end()) {
-    tmb = cgi["tmb"]->getIntegerValue();
-    std::cout << "CFEBTiming ME1/1A:  TMB " << tmb << std::endl;
-    TMB_ = tmb;
-  } else {
-    std::cout << "CFEBTiming ME1/1A:  No tmb" << std::endl;
-    tmb = TMB_;
-  }
-  //
-  MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
-  MyTest[tmb][current_crate_].CFEBTiming_with_Posnegs_basic_scan();
-  MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
-  //
-  this->ChamberTests(in,out);
-  //
-}
-
-void EmuPeripheralCrateConfig::CFEBTimingLayerMaskScan(xgi::Input * in, xgi::Output * out )
-  throw (xgi::exception::Exception) {
-  //
-  std::cout << "CFEBTiming ME1/1A" << std::endl;
-  LOG4CPLUS_INFO(getApplicationLogger(), "CFEBTiming");
-  //
-  cgicc::Cgicc cgi(in);
-  //
-  int tmb=0, dmb=0;
-  //
-  cgicc::form_iterator name = cgi.getElement("dmb");
-  //
-  if(name != cgi.getElements().end()) {
-    dmb = cgi["dmb"]->getIntegerValue();
-    std::cout << "CFEBTiming ME1/1A:  DMB " << dmb << std::endl;
-    DMB_ = dmb;
-  } else {
-    std::cout << "CFEBTiming ME1/1A:  No dmb" << std::endl;
-    dmb = DMB_;
-  }
-  //
-  name = cgi.getElement("tmb");
-  //
-  if(name != cgi.getElements().end()) {
-    tmb = cgi["tmb"]->getIntegerValue();
-    std::cout << "CFEBTiming ME1/1A:  TMB " << tmb << std::endl;
-    TMB_ = tmb;
-  } else {
-    std::cout << "CFEBTiming ME1/1A:  No tmb" << std::endl;
-    tmb = TMB_;
-  }
-  //
-  MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
-  MyTest[tmb][current_crate_].CFEBTiming_LayerMaskScan();
-  MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
-  //
-  this->ChamberTests(in,out);
-  //
-}
-
-void EmuPeripheralCrateConfig::CFEBTimingHalfStripScan(xgi::Input * in, xgi::Output * out )
-  throw (xgi::exception::Exception) {
-  //
-  std::cout << "CFEBTiming ME1/1A" << std::endl;
-  LOG4CPLUS_INFO(getApplicationLogger(), "CFEBTiming");
-  //
-  cgicc::Cgicc cgi(in);
-  //
-  int tmb=0, dmb=0;
-  //
-  cgicc::form_iterator name = cgi.getElement("dmb");
-  //
-  if(name != cgi.getElements().end()) {
-    dmb = cgi["dmb"]->getIntegerValue();
-    std::cout << "CFEBTiming ME1/1A:  DMB " << dmb << std::endl;
-    DMB_ = dmb;
-  } else {
-    std::cout << "CFEBTiming ME1/1A:  No dmb" << std::endl;
-    dmb = DMB_;
-  }
-  //
-  name = cgi.getElement("tmb");
-  //
-  if(name != cgi.getElements().end()) {
-    tmb = cgi["tmb"]->getIntegerValue();
-    std::cout << "CFEBTiming ME1/1A:  TMB " << tmb << std::endl;
-    TMB_ = tmb;
-  } else {
-    std::cout << "CFEBTiming ME1/1A:  No tmb" << std::endl;
-    tmb = TMB_;
-  }
-  //
-  MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
-  MyTest[tmb][current_crate_].CFEBTiming_HalfStripScan();
-  MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
-  //
-  this->ChamberTests(in,out);
-  //
-}
-
 void EmuPeripheralCrateConfig::CFEBTimingL1AWindowScan(xgi::Input * in, xgi::Output * out ) throw (xgi::exception::Exception) {
 	//
 	std::cout << "CFEBTiming L1A Window Scan" << std::endl;
@@ -5865,47 +5739,6 @@ void EmuPeripheralCrateConfig::CFEBTimingL1AWindowScan(xgi::Input * in, xgi::Out
 	//
 	MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
 	MyTest[tmb][current_crate_].CFEBTiming_L1AWindowScan();
-	MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
-	//
-	this->ChamberTests(in,out);
-	//
-}
-
-void EmuPeripheralCrateConfig::CFEBTimingDMBDebug(xgi::Input * in, xgi::Output * out )
-	throw (xgi::exception::Exception) {
-	//
-	std::cout << "CFEBTiming ME1/1A" << std::endl;
-	LOG4CPLUS_INFO(getApplicationLogger(), "CFEBTiming");
-	//
-	cgicc::Cgicc cgi(in);
-	//
-	int tmb=0, dmb=0;
-	//
-	cgicc::form_iterator name = cgi.getElement("dmb");
-	//
-	if(name != cgi.getElements().end()) {
-		dmb = cgi["dmb"]->getIntegerValue();
-		std::cout << "CFEBTiming ME1/1A:  DMB " << dmb << std::endl;
-		DMB_ = dmb;
-	} else {
-		std::cout << "CFEBTiming ME1/1A:  No dmb" << std::endl;
-		dmb = DMB_;
-	}
-	//
-	name = cgi.getElement("tmb");
-	//
-	if(name != cgi.getElements().end()) {
-		tmb = cgi["tmb"]->getIntegerValue();
-		std::cout << "CFEBTiming ME1/1A:  TMB " << tmb << std::endl;
-		TMB_ = tmb;
-	} else {
-		std::cout << "CFEBTiming ME1/1A:  No tmb" << std::endl;
-		tmb = TMB_;
-	}
-	//
-	MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
-	MyTest[tmb][current_crate_].CFEBTiming_DMBDebug();
-	//MyTest[tmb][current_crate_].CFEBTiming_L1AWindowScan();
 	MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
 	//
 	this->ChamberTests(in,out);
@@ -6021,47 +5854,6 @@ void EmuPeripheralCrateConfig::CFEBTimingSetCCBL1ADelay(xgi::Input * in, xgi::Ou
   this->ChamberTests(in,out);
   //
 }
-
-void EmuPeripheralCrateConfig::Step_21(xgi::Input * in, xgi::Output * out )
-	throw (xgi::exception::Exception) {
-	//
-	std::cout << "CFEBTiming ME1/1A" << std::endl;
-	LOG4CPLUS_INFO(getApplicationLogger(), "Step_21");
-	//
-	cgicc::Cgicc cgi(in);
-	//
-	int tmb=0, dmb=0;
-	//
-	cgicc::form_iterator name = cgi.getElement("dmb");
-	//
-	if(name != cgi.getElements().end()) {
-		dmb = cgi["dmb"]->getIntegerValue();
-		std::cout << "CFEBTiming ME1/1A:  DMB " << dmb << std::endl;
-		DMB_ = dmb;
-	} else {
-		std::cout << "CFEBTiming ME1/1A:  No dmb" << std::endl;
-		dmb = DMB_;
-	}
-	//
-	name = cgi.getElement("tmb");
-	//
-	if(name != cgi.getElements().end()) {
-		tmb = cgi["tmb"]->getIntegerValue();
-		std::cout << "CFEBTiming ME1/1A:  TMB " << tmb << std::endl;
-		TMB_ = tmb;
-	} else {
-		std::cout << "CFEBTiming ME1/1A:  No tmb" << std::endl;
-		tmb = TMB_;
-	}
-	//
-	MyTest[tmb][current_crate_].RedirectOutput(&ChamberTestsOutput[tmb][current_crate_]);
-	MyTest[tmb][current_crate_].Step_21();
-	MyTest[tmb][current_crate_].RedirectOutput(&std::cout);
-	//
-	this->ChamberTests(in,out);
-	//
-}
-
 
 void EmuPeripheralCrateConfig::ALCTBC0Scan(xgi::Input * in, xgi::Output * out ) 
   throw (xgi::exception::Exception) {
