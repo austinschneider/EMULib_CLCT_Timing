@@ -68,9 +68,6 @@ public:
   void CFEBTiming_without_Posnegs();
   void CFEBTiming_Configure(int * tof = NULL);
   void CFEBTiming_PulseInject(bool is_inject_scan, int cfeb, unsigned int layer_mask, unsigned int pattern, unsigned int halfstrip, unsigned int n_pulses = 1, unsigned int pulse_delay = 0x4f);
-  void CFEBTiming_Debug();
-  void CFEBTiming_LayerMaskScan();
-  void CFEBTiming_HalfStripScan();
   void SetCfebRxPosNeg(int posneg);
   void SetCfebRxClockDelay(int delay);
   void SetTMBL1ADelay(int delay);
@@ -81,10 +78,6 @@ public:
   void SetDCFEBsPipelineDepth(int depth);
   void SetODMBPedestalMode();
   void CFEBTiming_ConfigureODMB();
-  void Step_21();
-  void configureCrate();
-  void configure_21();
-  void enable_21();
   int GetExtTrigDelay();
   void Clear_ODMB_FIFO();
   void Print_ODMB_FIFO();
@@ -239,7 +232,6 @@ public:
   }
   void halfset(int icrd,int ipln,int ihalf,int chan[][6][16]);
   //void DisableCCBL1A
-  void CFEBTiming_DMBDebug(bool print_data = true, bool print_clct = true);
   int * CFEBTiming_L1AWindowScan(bool print_data = true, bool print_clct = true);
   int CFEBHalfStripToTMBHalfStrip(int cfeb, int halfstrip);
 

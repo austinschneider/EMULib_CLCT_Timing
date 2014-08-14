@@ -4869,65 +4869,6 @@ void EmuPeripheralCrateConfig::ChamberTests(xgi::Input * in, xgi::Output * out )
 	//
 	*out << cgicc::tr();
 	//
-	*out << cgicc::td().set("ALIGN","left");
-	std::string CFEBTimingDebug = toolbox::toString("/%s/CFEBTimingDebug",getApplicationDescriptor()->getURN().c_str());
-	*out << cgicc::form().set("method","GET").set("action",CFEBTimingDebug) << std::endl ;
-	*out << cgicc::input().set("type","submit").set("value","CFEBTimingDebug") << std::endl ;
-	sprintf(buf,"%d",tmb);
-	*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
-	sprintf(buf,"%d",dmb);
-	*out << cgicc::input().set("type","hidden").set("value",buf).set("name","dmb");
-	*out << cgicc::form() << std::endl ;
-	*out << cgicc::td();
-	//
-	*out << cgicc::td().set("ALIGN","left");
-	std::string CFEBTimingLayerMaskScan = toolbox::toString("/%s/CFEBTimingLayerMaskScan",getApplicationDescriptor()->getURN().c_str());
-	*out << cgicc::form().set("method","GET").set("action",CFEBTimingLayerMaskScan) << std::endl ;
-	*out << cgicc::input().set("type","submit").set("value","CFEBTimingLayerMaskScan") << std::endl ;
-	sprintf(buf,"%d",tmb);
-	*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
-	sprintf(buf,"%d",dmb);
-	*out << cgicc::input().set("type","hidden").set("value",buf).set("name","dmb");
-	*out << cgicc::form() << std::endl ;
-	*out << cgicc::td();
-	//
-	*out << cgicc::td().set("ALIGN","left");
-	std::string CFEBTimingHalfStripScan = toolbox::toString("/%s/CFEBTimingHalfStripScan",getApplicationDescriptor()->getURN().c_str());
-	*out << cgicc::form().set("method","GET").set("action",CFEBTimingHalfStripScan) << std::endl ;
-	*out << cgicc::input().set("type","submit").set("value","CFEBTimingHalfStripScan") << std::endl ;
-	sprintf(buf,"%d",tmb);
-	*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
-	sprintf(buf,"%d",dmb);
-	*out << cgicc::input().set("type","hidden").set("value",buf).set("name","dmb");
-	*out << cgicc::form() << std::endl ;
-	*out << cgicc::td();
-	//
-	*out << cgicc::td().set("ALIGN","left");
-	std::string CFEBTimingDMBDebug = toolbox::toString("/%s/CFEBTimingDMBDebug",getApplicationDescriptor()->getURN().c_str());
-	*out << cgicc::form().set("method","GET").set("action",CFEBTimingDMBDebug) << std::endl ;
-	*out << cgicc::input().set("type","submit").set("value","CFEBTimingDMBDebug") << std::endl ;
-	sprintf(buf,"%d",tmb);
-	*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
-	sprintf(buf,"%d",dmb);
-	*out << cgicc::input().set("type","hidden").set("value",buf).set("name","dmb");
-	*out << cgicc::form() << std::endl ;
-	*out << cgicc::td();
-	//
-	*out << cgicc::td().set("ALIGN","left");
-	std::string Step_21 = toolbox::toString("/%s/Step_21",getApplicationDescriptor()->getURN().c_str());
-	*out << cgicc::form().set("method","GET").set("action",Step_21) << std::endl ;
-	*out << cgicc::input().set("type","submit").set("value","Step_21") << std::endl ;
-	sprintf(buf,"%d",tmb);
-	*out << cgicc::input().set("type","hidden").set("value",buf).set("name","tmb");
-	sprintf(buf,"%d",dmb);
-	*out << cgicc::input().set("type","hidden").set("value",buf).set("name","dmb");
-	*out << cgicc::form() << std::endl ;
-	*out << cgicc::td();
-	//
-	*out << cgicc::tr();
-	//
-	*out << cgicc::tr();
-	//
 	*out << cgicc::td();
 	//
 	std::string urn = toolbox::toString("/%s/CFEBTimingL1AWindowScan",getApplicationDescriptor()->getURN().c_str());
